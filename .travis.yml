@@ -1,0 +1,18 @@
+language : node_js
+
+node_js :
+  - "8.9.0"
+
+install:
+  - yarn install
+
+script:
+  - yarn run test
+
+deploy:
+  provider: npm
+  email: jonas.snellinckx@theledger.be
+  skip_cleanup: true
+  api_key: $NPM_TOKEN
+  on:
+    tags: true
