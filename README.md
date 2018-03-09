@@ -35,7 +35,7 @@ Testing NodeJS chaincode works similarly to testing using the mockstub in the GO
 
 The **ChaincodeMockStub** has 2 important mock functions `mockInit`and `mockInvoke`. By passing your chaincode, it will mock a transaction and execute a invoke/init similarly to how it will originally be called. Both these functions will return a [ChaincodeResponse](https://github.com/wearetheledger/fabric-shim-types/blob/4b8844769c2439303954d03f5c8a66dc0a795ed4/index.d.ts#L93). Using this ChaincodeResponse object, we can test whether or not the action returned an expected result.
 
-On *success*, this response will look like this. If the method returns something, the reponse will also contain a `payload`.
+On *success*, this response will look like this. If the method returns something, the response will also contain a `payload`.
 
 ```json
 {
@@ -53,10 +53,10 @@ On *error*, this response will look like this.
 }
 ```
 
-You'll be able to validate the reponse using something like `chai`.
+You'll be able to validate the response using something like `chai`.
 
 ```javascript
-// Validate reponse status
+// Validate response status
 expect(response.status).to.eql(200)
 // Validate payload - using `Transform.bufferToObject` because we recieve the payload as a buffer
 expect(Transform.bufferToObject(response.payload).owner).to.eql("newOwner")
