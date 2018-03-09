@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/wearetheledger/fabric-mock-stub.svg?branch=master)](https://travis-ci.org/wearetheledger/fabric-mock-stub)
 # Hyperledger Fabric Nodejs mockstub
-A Nodejs module that helps you to test your Hyperledger Fabric nodejs chaincode.
+A Nodejs module that helps you to test your Hyperledger Fabric nodejs chaincode. When it proves itself, we will be adding this package to the official gerrit of the Fabric nodejs SDK.
 
 - [docs](https://wearetheledger.github.io/fabric-mock-stub)
 - [example usage](https://github.com/wearetheledger/fabric-network-boilerplate/tree/master/chaincode/node)
