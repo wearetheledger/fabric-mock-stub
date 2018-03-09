@@ -14,7 +14,7 @@ A Node.js module that helps you to test your Hyperledger Fabric nodejs chaincode
 
 ## Installation 
 ```sh
-yarn add @theledger/fabric-mock-stub
+yarn add @theledger/fabric-mock-stub --dev
 ```
 
 ## Usage
