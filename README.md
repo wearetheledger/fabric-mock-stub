@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/wearetheledger/fabric-mock-stub.svg?branch=master)](https://travis-ci.org/wearetheledger/fabric-mock-stub)
-# fabric-mock-stub
-A Node.js module that helps you to test your Hyperledger Fabric nodejs chaincode.
+# Hyperledger Fabric Nodejs mockstub
+A Nodejs module that helps you to test your Hyperledger Fabric nodejs chaincode.
 
 - [docs](https://wearetheledger.github.io/fabric-mock-stub)
 - [example usage](https://github.com/wearetheledger/fabric-network-boilerplate/tree/master/chaincode/node)
@@ -205,7 +205,7 @@ describe('Test MyChaincode', () => {
             'docType': 'car'
         };
 
-        const car = await chaincode.queryCar(stub, new TransactionHelper(stub), ["CAR0"])
+        const car = await chaincode.queryCar(stub, ["CAR0"])
 
         expect(car).to.deep.equal(car0);
     });
