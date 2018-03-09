@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/wearetheledger/fabric-mock-stub.svg?branch=master)](https://travis-ci.org/wearetheledger/fabric-mock-stub)
 # Hyperledger Fabric Nodejs mockstub
-A Nodejs module that helps you to test your Hyperledger Fabric nodejs chaincode. When it proves itself, we will be adding this package to the official gerrit of the Fabric nodejs SDK.
+A Nodejs module that helps you to test your Hyperledger Fabric Nodejs chaincode. When it proves itself, we will be adding this package to the official Gerrit of the Fabric Nodejs SDK.
 
 - [docs](https://wearetheledger.github.io/fabric-mock-stub)
 - [example usage](https://github.com/wearetheledger/fabric-network-boilerplate/tree/master/chaincode/node)
@@ -31,7 +31,7 @@ Examples are located at [examples/tests](examples/tests)
 - getChannelID
 
 ### How to test
-Testing NodeJS chaincode works similarly to testing using the mockstub in the GOlang chaincode.
+Testing NodeJS chaincode works similarly to testing using the mockstub in the Golang chaincode.
 
 The **ChaincodeMockStub** has 2 important mock functions `mockInit`and `mockInvoke`. By passing your chaincode, it will mock a transaction and execute a invoke/init similarly to how it will originally be called. Both these functions will return a [ChaincodeResponse](https://github.com/wearetheledger/fabric-shim-types/blob/4b8844769c2439303954d03f5c8a66dc0a795ed4/index.d.ts#L93). Using this ChaincodeResponse object, we can test whether or not the action returned an expected result.
 
@@ -63,7 +63,7 @@ expect(Transform.bufferToObject(response.payload).owner).to.eql("newOwner")
 ```
 
 #### Include your chaincode
-At the top of your test file, your can import and instantiate your chaincode, this only has to be done once.
+At the top of your test file, you can import and instantiate your chaincode, this only has to be done once.
 
 ```javascript
 import { MyChaincode } from '../<path_to_your_chaincode_class>';
@@ -100,7 +100,7 @@ describe('Test MyChaincode', () => {
 ```
 
 ### Test Init
-The `Init()`method can be tested using the `mockStub.mockInit(txId: string, args: string[])` function. It will create a new mock transaction and call the init method on your chaincode. Since the init happens when instantiating your chaincode, you generally don't want it to return anything. So we check for the response status here.
+The `Init()`method can be tested using the `mockStub.mockInit(txId: string, args: string[])` function. It will create a new mock transaction and call the init method on your chaincode. Since the init happens when instantiating your chaincode, you generally don't want it to return anything. So, for this, we'll check the response status.
 
 ```javascript
 import { MyChaincode } from '../<path_to_your_chaincode_class>';
