@@ -1,8 +1,8 @@
-[![Build Status](https://travis-ci.org/wearetheledger/fabric-node-chaincode-utils.svg?branch=master)](https://travis-ci.org/wearetheledger/fabric-node-chaincode-utils)
-# fabric-node-chaincode-utils
-A Node.js module that helps you to build and test your Hyperledger Fabric nodejs chaincode.
+[![Build Status](https://travis-ci.org/wearetheledger/fabric-mock-stub.svg?branch=master)](https://travis-ci.org/wearetheledger/fabric-mock-stub)
+# fabric-mock-stub
+A Node.js module that helps you to test your Hyperledger Fabric nodejs chaincode.
 
-- [docs](https://wearetheledger.github.io/fabric-node-chaincode-utils)
+- [docs](https://wearetheledger.github.io/fabric-mock-stub)
 - [example usage](https://github.com/wearetheledger/fabric-network-boilerplate/tree/master/chaincode/node)
 
 ## Table of contents
@@ -14,7 +14,7 @@ A Node.js module that helps you to build and test your Hyperledger Fabric nodejs
 
 ## Installation 
 ```sh
-yarn add @theledger/fabric-chaincode-utils
+yarn add @theledger/fabric-mock-stub
 ```
 
 ## Usage
@@ -75,7 +75,7 @@ const chaincode = new MyChaincode();
 After this, in your tests, you can create a new mockstub. You have to pass a random name (not that important) and your chaincode. It's up to you if you want to create a new mockstub for each test, which runs those tests with an empty state. Or use one for all the tests. If you reuse the same stub, you also reuse the previous tests state.
 
 ```javascript
-import { ChaincodeMockStub, Transform } from "@theledger/fabric-chaincode-utils";
+import { ChaincodeMockStub, Transform } from "@theledger/fabric-mock-stub";
 
 const stub = new ChaincodeMockStub("MyMockStub", chaincode);
 ```
@@ -83,8 +83,8 @@ const stub = new ChaincodeMockStub("MyMockStub", chaincode);
 #### Example
 
 ```javascript
-import { MyChaincode } from '../MyChaincode';
-import { ChaincodeMockStub, Transform } from "@theledger/fabric-chaincode-utils";
+import { MyChaincode } from '../<path_to_your_chaincode_class>';
+import { ChaincodeMockStub, Transform } from "@theledger/fabric-mock-stub";
 
 // You always need your chaincode so it knows which chaincode to invoke on
 const chaincode = new MyChaincode();
@@ -103,8 +103,8 @@ describe('Test MyChaincode', () => {
 The `Init()`method can be tested using the `mockStub.mockInit(txId: string, args: string[])` function. It will create a new mock transaction and call the init method on your chaincode. Since the init happens when instantiating your chaincode, you generally don't want it to return anything. So we check for the response status here.
 
 ```javascript
-import { MyChaincode } from '../MyChaincode';
-import { ChaincodeMockStub, Transform } from "@theledger/fabric-chaincode-utils";
+import { MyChaincode } from '../<path_to_your_chaincode_class>';
+import { ChaincodeMockStub, Transform } from "@theledger/fabric-mock-stub";
 
 // You always need your chaincode so it knows which chaincode to invoke on
 const chaincode = new MyChaincode();
@@ -126,8 +126,8 @@ The `Invoke()`method can be tested using the `mockStub.mockInvoke(txId: string, 
 
 **Test queryCar**
 ```javascript
-import { MyChaincode } from '../MyChaincode';
-import { ChaincodeMockStub, Transform } from "@theledger/fabric-chaincode-utils";
+import { MyChaincode } from '../<path_to_your_chaincode_class>';
+import { ChaincodeMockStub, Transform } from "@theledger/fabric-mock-stub";
 
 // You always need your chaincode so it knows which chaincode to invoke on
 const chaincode = new MyChaincode();
@@ -152,8 +152,8 @@ describe('Test MyChaincode', () => {
 
 **Test createCar**
 ```javascript
-import { MyChaincode } from '../MyChaincode';
-import { ChaincodeMockStub, Transform } from "@theledger/fabric-chaincode-utils";
+import { MyChaincode } from '../<path_to_your_chaincode_class>';
+import { ChaincodeMockStub, Transform } from "@theledger/fabric-mock-stub";
 
 // You always need your chaincode so it knows which chaincode to invoke on
 const chaincode = new MyChaincode();
@@ -186,8 +186,8 @@ You are not required to only test using the `mockInvoke` and `mockInit`. You can
 #### Testing using Mychaincode directly
 A remark when using this, depending what you return in your function, you will be able to recieve a Buffer or an object in your tests. This is discussed in [chaincode](#writing-chaincode)
 ```javascript
-import { MyChaincode } from '../MyChaincode';
-import { ChaincodeMockStub, Transform } from "@theledger/fabric-chaincode-utils";
+import { MyChaincode } from '../<path_to_your_chaincode_class>';
+import { ChaincodeMockStub, Transform } from "@theledger/fabric-mock-stub";
 
 // You always need your chaincode so it knows which chaincode to invoke on
 const chaincode = new MyChaincode();
@@ -211,11 +211,12 @@ describe('Test MyChaincode', () => {
     });
 });
 ```
+
 #### Testing using ChaincodeMockStub directly 🤨
 You can do this, but you shouldn't. Your logic should be written in your functions, not your tests. 
 ```javascript
-import { MyChaincode } from '../MyChaincode';
-import { ChaincodeMockStub, Transform } from "@theledger/fabric-chaincode-utils";
+import { MyChaincode } from '../<path_to_your_chaincode_class>';
+import { ChaincodeMockStub, Transform } from "@theledger/fabric-mock-stub";
 
 // You always need your chaincode so it knows which chaincode to invoke on
 const chaincode = new MyChaincode();
@@ -252,7 +253,6 @@ describe('Test MyChaincode', () => {
 
 ## Credits
 
-- [@Kunstmaan](https://github.com/Kunstmaan/hyperledger-fabric-node-chaincode-utils) for the initial idea and part of the util code.
 - Developer - Jo ([@jestersimpps](https://github.com/@jestersimpps))
 - Developer - Jonas ([@Superjo149](https://github.com/@Superjo149))
 - Company - TheLedger ([theledger.be](https://theledger.be))
