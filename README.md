@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/wearetheledger/fabric-mock-stub.svg?branch=master)](https://travis-ci.org/wearetheledger/fabric-mock-stub)
 # Hyperledger Fabric Nodejs mockstub
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/wearetheledger/fabric-mock-stub.svg)](https://greenkeeper.io/)
 A Nodejs module that helps you to test your Hyperledger Fabric Nodejs chaincode. When it proves itself, we will be adding this package to the official Gerrit of the Fabric Nodejs SDK.
 
 - [docs](https://wearetheledger.github.io/fabric-mock-stub)
