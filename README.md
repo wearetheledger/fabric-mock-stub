@@ -18,7 +18,7 @@ yarn add @theledger/fabric-mock-stub --dev
 ```
 
 ## Usage
-### ChaincodeMockStub [View definition](https://wearetheledger.github.io/fabric-mock-stub/classes/_mocking_chaincodemockstub_.chaincodemockstub.html)
+### ChaincodeMockStub [View definition](https://wearetheledger.github.io/fabric-mock-stub/classes/_chaincodemockstub_.chaincodemockstub.html)
 This ChaincodeMockStub is a Mock implementation of the fabric-shim stub. This means you can test your chaincode without actually starting your network. 
 
 Examples are located at [examples/tests](examples/tests)
