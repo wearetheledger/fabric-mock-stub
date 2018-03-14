@@ -2,11 +2,13 @@
 # Hyperledger Fabric Nodejs mockstub
 A Nodejs module that helps you to test your Hyperledger Fabric Nodejs chaincode. When it proves itself, we will be adding this package to the official Gerrit of the Fabric Nodejs SDK.
 
-- [docs](https://wearetheledger.github.io/fabric-mock-stub)
-- [example usage](https://github.com/wearetheledger/fabric-network-boilerplate/tree/master/chaincode/node)
+- [Docs](https://wearetheledger.github.io/fabric-mock-stub)
+- [Example usage](https://github.com/wearetheledger/fabric-network-boilerplate/tree/master/chaincode/node)
+- [Article about this repo](https://medium.com/wearetheledger/how-to-start-testing-your-hyperledger-fabric-nodejs-chaincode-229453c3c214)
 
 ## Table of contents
 - [Installation](#installation)
+- [Todo](#todo)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [Credits](#credits)
@@ -16,6 +18,16 @@ A Nodejs module that helps you to test your Hyperledger Fabric Nodejs chaincode.
 ```sh
 yarn add @theledger/fabric-mock-stub --dev
 ```
+
+## Todo
+- [ ] Finish [node-couchdb-query-engine](https://github.com/wearetheledger/node-couchdb-query-engine)
+- [ ] Implement `fields` and `sort` into GetQueryResult
+- Implement remaining mock methods for
+    - [ ] getHistoryForKey
+    - [ ] getBinding
+    - [ ] getTransient
+    - [ ] setEvent
+    - [ ] getChannelID
 
 ## Usage
 ### ChaincodeMockStub [View definition](https://wearetheledger.github.io/fabric-mock-stub/classes/_chaincodemockstub_.chaincodemockstub.html)
