@@ -26,7 +26,6 @@ yarn add @theledger/fabric-mock-stub --dev
     - [ ] getHistoryForKey
     - [ ] getBinding
     - [ ] getTransient
-    - [ ] setEvent
     - [ ] getChannelID
 
 ## Usage
