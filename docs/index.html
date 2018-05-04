@@ -65,25 +65,39 @@
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
 				<p><a href="https://travis-ci.org/wearetheledger/fabric-mock-stub"><img src="https://travis-ci.org/wearetheledger/fabric-mock-stub.svg?branch=master" alt="Build Status"></a></p>
-				<h1 id="fabric-mock-stub">fabric-mock-stub</h1>
-				<p>A Node.js module that helps you to test your Hyperledger Fabric nodejs chaincode.</p>
+				<h1 id="hyperledger-fabric-nodejs-mockstub">Hyperledger Fabric Nodejs mockstub</h1>
+				<p>A Nodejs module that helps you to test your Hyperledger Fabric Nodejs chaincode. When it proves itself, we will be adding this package to the official Gerrit of the Fabric Nodejs SDK.</p>
 				<ul>
-					<li><a href="https://wearetheledger.github.io/fabric-mock-stub">docs</a></li>
-					<li><a href="https://github.com/wearetheledger/fabric-network-boilerplate/tree/master/chaincode/node">example usage</a></li>
+					<li><a href="https://wearetheledger.github.io/fabric-mock-stub">Docs</a></li>
+					<li><a href="https://github.com/wearetheledger/fabric-network-boilerplate/tree/master/chaincode/node">Example usage</a></li>
+					<li><a href="https://medium.com/wearetheledger/how-to-start-testing-your-hyperledger-fabric-nodejs-chaincode-229453c3c214">Article about this repo</a></li>
 				</ul>
 				<h2 id="table-of-contents">Table of contents</h2>
 				<ul>
 					<li><a href="#installation">Installation</a></li>
+					<li><a href="#todo">Todo</a></li>
 					<li><a href="#usage">Usage</a></li>
 					<li><a href="#contributing">Contributing</a></li>
 					<li><a href="#credits">Credits</a></li>
 					<li><a href="#license">License</a></li>
 				</ul>
 				<h2 id="installation">Installation</h2>
-				<pre><code class="lang-sh">yarn add @theledger/fabric-mock-stub
+				<pre><code class="lang-sh">yarn add @theledger/fabric-mock-stub --dev
 </code></pre>
+				<h2 id="todo">Todo</h2>
+				<ul>
+					<li>[ ] Finish <a href="https://github.com/wearetheledger/node-couchdb-query-engine">node-couchdb-query-engine</a></li>
+					<li>[ ] Implement <code>fields</code> and <code>sort</code> into GetQueryResult</li>
+					<li>Implement remaining mock methods for<ul>
+							<li>[ ] getHistoryForKey</li>
+							<li>[ ] getBinding</li>
+							<li>[ ] getTransient</li>
+							<li>[ ] getChannelID</li>
+						</ul>
+					</li>
+				</ul>
 				<h2 id="usage">Usage</h2>
-				<h3 id="chaincodemockstub-view-definition">ChaincodeMockStub <a href="https://wearetheledger.github.io/fabric-node-chaincode-utils/classes/_mocking_chaincodemockstub_.chaincodemockstub.html">View definition</a></h3>
+				<h3 id="chaincodemockstub-view-definition">ChaincodeMockStub <a href="https://wearetheledger.github.io/fabric-mock-stub/classes/_chaincodemockstub_.chaincodemockstub.html">View definition</a></h3>
 				<p>This ChaincodeMockStub is a Mock implementation of the fabric-shim stub. This means you can test your chaincode without actually starting your network. </p>
 				<p>Examples are located at <a href="examples/tests">examples/tests</a></p>
 				<p><strong>!! Following methods are not (yet) implemented and will not work !!</strong></p>
@@ -95,9 +109,9 @@
 					<li>getChannelID</li>
 				</ul>
 				<h3 id="how-to-test">How to test</h3>
-				<p>Testing NodeJS chaincode works similarly to testing using the mockstub in the GOlang chaincode.</p>
+				<p>Testing NodeJS chaincode works similarly to testing using the mockstub in the Golang chaincode.</p>
 				<p>The <strong>ChaincodeMockStub</strong> has 2 important mock functions <code>mockInit</code>and <code>mockInvoke</code>. By passing your chaincode, it will mock a transaction and execute a invoke/init similarly to how it will originally be called. Both these functions will return a <a href="https://github.com/wearetheledger/fabric-shim-types/blob/4b8844769c2439303954d03f5c8a66dc0a795ed4/index.d.ts#L93">ChaincodeResponse</a>. Using this ChaincodeResponse object, we can test whether or not the action returned an expected result.</p>
-				<p>On <em>success</em>, this response will look like this. If the method returns something, the reponse will also contain a <code>payload</code>.</p>
+				<p>On <em>success</em>, this response will look like this. If the method returns something, the response will also contain a <code>payload</code>.</p>
 				<pre><code class="lang-json">{
     <span class="hljs-attr">"status"</span>: <span class="hljs-number">200</span>,
     <span class="hljs-attr">"payload"</span>: &lt;Buffer_with_your_data&gt;
@@ -105,18 +119,18 @@
 </code></pre>
 				<p>On <em>error</em>, this response will look like this.</p>
 				<pre><code class="lang-json">{
-    <span class="hljs-attr">"status"</span>: <span class="hljs-number">200</span>,
+    <span class="hljs-attr">"status"</span>: <span class="hljs-number">500</span>,
     <span class="hljs-attr">"message"</span>: &lt;Buffer_with_your_error_message&gt;
 }
 </code></pre>
-				<p>You&#39;ll be able to validate the reponse using something like <code>chai</code>.</p>
-				<pre><code class="lang-javascript"><span class="hljs-comment">// Validate reponse status</span>
+				<p>You&#39;ll be able to validate the response using something like <code>chai</code>.</p>
+				<pre><code class="lang-javascript"><span class="hljs-comment">// Validate response status</span>
 expect(response.status).to.eql(<span class="hljs-number">200</span>)
 <span class="hljs-comment">// Validate payload - using `Transform.bufferToObject` because we recieve the payload as a buffer</span>
 expect(Transform.bufferToObject(response.payload).owner).to.eql(<span class="hljs-string">"newOwner"</span>)
 </code></pre>
 				<h4 id="include-your-chaincode">Include your chaincode</h4>
-				<p>At the top of your test file, your can import and instantiate your chaincode, this only has to be done once.</p>
+				<p>At the top of your test file, you can import and instantiate your chaincode, this only has to be done once.</p>
 				<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> { MyChaincode } <span class="hljs-keyword">from</span> <span class="hljs-string">'../&lt;path_to_your_chaincode_class&gt;'</span>;
 
 <span class="hljs-comment">// You always need your chaincode so it knows which chaincode to invoke on</span>
@@ -126,7 +140,7 @@ expect(Transform.bufferToObject(response.payload).owner).to.eql(<span class="hlj
 				<p>After this, in your tests, you can create a new mockstub. You have to pass a random name (not that important) and your chaincode. It&#39;s up to you if you want to create a new mockstub for each test, which runs those tests with an empty state. Or use one for all the tests. If you reuse the same stub, you also reuse the previous tests state.</p>
 				<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> { ChaincodeMockStub, Transform } <span class="hljs-keyword">from</span> <span class="hljs-string">"@theledger/fabric-mock-stub"</span>;
 
-<span class="hljs-keyword">const</span> stub = <span class="hljs-keyword">new</span> ChaincodeMockStub(<span class="hljs-string">"MyMockStub"</span>, chaincode);
+<span class="hljs-keyword">const</span> mockStub = <span class="hljs-keyword">new</span> ChaincodeMockStub(<span class="hljs-string">"MyMockStub"</span>, chaincode);
 </code></pre>
 				<h4 id="example">Example</h4>
 				<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> { MyChaincode } <span class="hljs-keyword">from</span> <span class="hljs-string">'../&lt;path_to_your_chaincode_class&gt;'</span>;
@@ -138,14 +152,14 @@ expect(Transform.bufferToObject(response.payload).owner).to.eql(<span class="hlj
 describe(<span class="hljs-string">'Test MyChaincode'</span>, () =&gt; {
 
     it(<span class="hljs-string">"Should init without issues"</span>, <span class="hljs-keyword">async</span> () =&gt; {
-        <span class="hljs-keyword">const</span> stub = <span class="hljs-keyword">new</span> ChaincodeMockStub(<span class="hljs-string">"MyMockStub"</span>, chaincode);
+        <span class="hljs-keyword">const</span> mockStub = <span class="hljs-keyword">new</span> ChaincodeMockStub(<span class="hljs-string">"MyMockStub"</span>, chaincode);
 
         <span class="hljs-comment">// Your test code</span>
     });
 });
 </code></pre>
 				<h3 id="test-init">Test Init</h3>
-				<p>The <code>Init()</code>method can be tested using the <code>mockStub.mockInit(txId: string, args: string[])</code> function. It will create a new mock transaction and call the init method on your chaincode. Since the init happens when instantiating your chaincode, you generally don&#39;t want it to return anything. So we check for the response status here.</p>
+				<p>The <code>Init()</code>method can be tested using the <code>mockStub.mockInit(txId: string, args: string[])</code> function. It will create a new mock transaction and call the init method on your chaincode. Since the init happens when instantiating your chaincode, you generally don&#39;t want it to return anything. So, for this, we&#39;ll check the response status.</p>
 				<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> { MyChaincode } <span class="hljs-keyword">from</span> <span class="hljs-string">'../&lt;path_to_your_chaincode_class&gt;'</span>;
 <span class="hljs-keyword">import</span> { ChaincodeMockStub, Transform } <span class="hljs-keyword">from</span> <span class="hljs-string">"@theledger/fabric-mock-stub"</span>;
 
@@ -240,7 +254,7 @@ describe(<span class="hljs-string">'Test MyChaincode'</span>, () =&gt; {
             <span class="hljs-string">'docType'</span>: <span class="hljs-string">'car'</span>
         };
 
-        <span class="hljs-keyword">const</span> car = <span class="hljs-keyword">await</span> chaincode.queryCar(stub, <span class="hljs-keyword">new</span> TransactionHelper(stub), [<span class="hljs-string">"CAR0"</span>])
+        <span class="hljs-keyword">const</span> car = <span class="hljs-keyword">await</span> chaincode.queryCar(stub, [<span class="hljs-string">"CAR0"</span>])
 
         expect(car).to.deep.equal(car0);
     });
