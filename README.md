@@ -14,7 +14,7 @@ A Nodejs module that helps you to test your Hyperledger Fabric Nodejs chaincode.
 - [Credits](#credits)
 - [License](#license)
 
-## Installation 
+## Installation
 ```sh
 yarn add @theledger/fabric-mock-stub --dev
 ```
@@ -30,7 +30,7 @@ yarn add @theledger/fabric-mock-stub --dev
 
 ## Usage
 ### ChaincodeMockStub [View definition](https://wearetheledger.github.io/fabric-mock-stub/classes/_chaincodemockstub_.chaincodemockstub.html)
-This ChaincodeMockStub is a Mock implementation of the fabric-shim stub. This means you can test your chaincode without actually starting your network. 
+This ChaincodeMockStub is a Mock implementation of the fabric-shim stub. This means you can test your chaincode without actually starting your network.
 
 Examples are located at [examples/tests](examples/tests)
 
@@ -38,7 +38,6 @@ Examples are located at [examples/tests](examples/tests)
 - getHistoryForKey
 - getBinding
 - getTransient
-- setEvent
 - getChannelID
 
 ### How to test
@@ -147,7 +146,7 @@ describe('Test MyChaincode', () => {
 
     it("Should query car", async () => {
         const mockStub = new ChaincodeMockStub("MyMockStub", chaincode);
-        
+
         const response = await mockStub.mockInvoke("tx2", ['queryCar', `CAR0`]);
 
         expect(Transform.bufferToObject(response.payload)).to.deep.eq({
@@ -195,7 +194,7 @@ describe('Test MyChaincode', () => {
 You are not required to only test using the `mockInvoke` and `mockInit`. You can directly call the methods on your chaincode or on the mockStub if you really want to.
 
 #### Testing using Mychaincode directly
-A remark when using this, depending what you return in your function, you will be able to recieve a Buffer or an object in your tests. This is discussed in [chaincode](#writing-chaincode)
+A remark when using this, depending what you return in your function, you will be able to receive a Buffer or an object in your tests. This is discussed in [chaincode](#writing-chaincode)
 ```javascript
 import { MyChaincode } from '../<path_to_your_chaincode_class>';
 import { ChaincodeMockStub, Transform } from "@theledger/fabric-mock-stub";
@@ -224,7 +223,10 @@ describe('Test MyChaincode', () => {
 ```
 
 #### Testing using ChaincodeMockStub directly 🤨
-You can do this, but you shouldn't. Your logic should be written in your functions, not your tests. 
+You can do this, but you shouldn't. Your logic should be written in your functions, not your tests.
+
+##### Test query results
+
 ```javascript
 import { MyChaincode } from '../<path_to_your_chaincode_class>';
 import { ChaincodeMockStub, Transform } from "@theledger/fabric-mock-stub";
@@ -254,8 +256,22 @@ describe('Test MyChaincode', () => {
 });
 ```
 
+##### Test emitted events
+
+```javascript
+it("Should get the emitted event", async () => {
+        const mockStub = new ChaincodeMockStub("MyMockStub", chaincode);
+
+        const responseUpdateTool = await mockStub.mockInvoke("tx1", ['createCar', `CAR0`, `prop1`, `prop2`, `prop3`, `owner`]);
+
+        const eventPayload = await stub.getEvent('CREATE_CAR');
+
+        expect(eventPayload).to.equal('Car created.');
+});
+```
+
 ## Contributing
- 
+
 1. Fork it! 🍴
 2. Create your feature branch: `git checkout -b my-new-feature`
 3. Commit your changes: `git commit -am 'Add some feature'`
