@@ -38,7 +38,6 @@ Examples are located at [examples/tests](examples/tests)
 - getHistoryForKey
 - getBinding
 - getTransient
-- setEvent
 - getChannelID
 
 ### How to test
