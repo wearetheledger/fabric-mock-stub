@@ -177,7 +177,7 @@ describe('Test Mockstub', () => {
 
         const eventPayload: Buffer = await stub.getEvent('CREATE_CAR');
 
-        expect(eventPayload).to.equal('Car created.')
+        expect(eventPayload).to.equal('Car created.');
     });
 
 });
