@@ -262,7 +262,7 @@ describe('Test MyChaincode', () => {
 it("Should get the emitted event", async () => {
         const mockStub = new ChaincodeMockStub("MyMockStub", chaincode);
 
-        const responseUpdateTool = await mockStub.mockInvoke("tx1", ['createCar', `CAR0`, `prop1`, `prop2`, `prop3`, `owner`]);
+        await mockStub.mockInvoke("tx1", ['createCar', `CAR0`, `prop1`, `prop2`, `prop3`, `owner`]);
 
         const eventPayload = await stub.getEvent('CREATE_CAR');
 
