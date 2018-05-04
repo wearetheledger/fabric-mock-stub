@@ -264,7 +264,7 @@ it("Should get the emitted event", async () => {
 
         await mockStub.mockInvoke("tx1", ['createCar', `CAR0`, `prop1`, `prop2`, `prop3`, `owner`]);
 
-        const eventPayload = await stub.getEvent('CREATE_CAR');
+        const eventPayload = await mockStub.getEvent('CREATE_CAR');
 
         expect(eventPayload).to.equal('Car created.');
 });
