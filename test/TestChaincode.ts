@@ -150,6 +150,8 @@ export class TestChaincode {
         };
 
         await stub.putState(args[0], Buffer.from(JSON.stringify(car)));
+        await stub.setEvent('CREATE_CAR', 'Car created.');
+        
         console.info('============= END : Create Car ===========');
     }
 

@@ -44,6 +44,7 @@ export class ChaincodeMockStub implements MockStub {
     private txID: string;
     private args: string[];
     public state: Map<string, Buffer> = new Map();
+    public event: Map<string, Buffer> = new Map();
     private invokables: Map<string, MockStub>;
     private signedProposal: SignedProposal;
 
@@ -394,13 +395,29 @@ export class ChaincodeMockStub implements MockStub {
     }
 
     /**
-     * @todo Implement
+     * Store the payload corresponding to an event name to the local event map
      *
      * @param {string} name
      * @param {Buffer} payload
      */
-    setEvent(name: string, payload: Buffer): void {
-        throw new Error('Not implemented');
+    setEvent(name: string, payload: Buffer): Promise<any> {
+        if (this.txID == '') {
+            return Promise.reject('Cannot setEvent without a transactions - call stub.mockTransactionStart()?');
+        }
+
+        this.event[name] = payload;
+
+        return Promise.resolve();
+    }
+
+    /**
+     * Get the stored payload for an event name in the local event map
+     *
+     * @param {string} key
+     * @returns {Promise<Buffer>}
+     */
+    getEvent(name: string): Promise<Buffer> {
+        return this.event[name];
     }
 
     /**
