@@ -38,7 +38,7 @@ export class Transform {
         }
 
         const bufferString = buffer.toString('utf8');
-        console.log(bufferString);
+
         if (bufferString.length <= 0) {
             return;
         }
