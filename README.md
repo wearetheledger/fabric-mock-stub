@@ -23,7 +23,6 @@ yarn add @theledger/fabric-mock-stub --dev
 - [ ] Finish [node-couchdb-query-engine](https://github.com/wearetheledger/node-couchdb-query-engine)
 - [ ] Implement `fields` and `sort` into GetQueryResult
 - Implement remaining mock methods for
-    - [ ] getHistoryForKey
     - [ ] getBinding
     - [ ] getTransient
     - [ ] getChannelID
@@ -35,7 +34,6 @@ This ChaincodeMockStub is a Mock implementation of the fabric-shim stub. This me
 Examples are located at [examples/tests](examples/tests)
 
 **!! Following methods are not (yet) implemented and will not work !!**
-- getHistoryForKey
 - getBinding
 - getTransient
 - getChannelID
