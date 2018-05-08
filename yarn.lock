@@ -8,9 +8,9 @@
   dependencies:
     babel-runtime "^6.26.0"
 
-"@theledger/fabric-shim-types@https://github.com/wearetheledger/fabric-shim-types":
-  version "1.0.3"
-  resolved "https://github.com/wearetheledger/fabric-shim-types#4b8844769c2439303954d03f5c8a66dc0a795ed4"
+"@theledger/fabric-shim-types@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@theledger/fabric-shim-types/-/fabric-shim-types-1.0.5.tgz#a75040b0988335b06ce095bfb31595e60064fc3c"
   dependencies:
     "@types/google-protobuf" "^3.2.7"
     "@types/log4js" "^2.3.5"

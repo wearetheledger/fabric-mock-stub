@@ -2,6 +2,7 @@ import {
     ChaincodeInterface,
     ChaincodeReponse,
     Iterators,
+    KeyModification,
     KV,
     MockStub,
     ProposalCreator,
@@ -18,6 +19,8 @@ import { LoggerInstance } from 'winston';
 import * as queryEngine from '@theledger/couchdb-query-engine';
 import { ChaincodeError } from './ChaincodeError';
 import { Transform } from './utils/datatransform';
+import { MockProtoTimestamp } from './MockProtoTimestamp';
+import { MockHistoryQueryIterator } from './MockHistoryQueryIterator';
 
 const defaultUserCert = '-----BEGIN CERTIFICATE-----' +
     'MIIB6TCCAY+gAwIBAgIUHkmY6fRP0ANTvzaBwKCkMZZPUnUwCgYIKoZIzj0EAwIw' +
@@ -45,6 +48,7 @@ export class ChaincodeMockStub implements MockStub {
     private args: string[];
     public state: Map<string, Buffer> = new Map();
     public event: Map<string, Buffer> = new Map();
+    public history: Map<string, KeyModification[]> = new Map();
     private invokables: Map<string, MockStub>;
     private signedProposal: SignedProposal;
 
@@ -226,6 +230,17 @@ export class ChaincodeMockStub implements MockStub {
 
         this.state[key] = value;
 
+        if (!this.history[key]) {
+            this.history[key] = [];
+        }
+
+        this.history[key].push(<KeyModification>{
+            is_delete: false,
+            value,
+            timestamp: new MockProtoTimestamp(),
+            tx_id: this.txID
+        });
+
         return Promise.resolve();
     }
 
@@ -236,6 +251,15 @@ export class ChaincodeMockStub implements MockStub {
      * @returns {Promise<any>}
      */
     deleteState(key: string): Promise<any> {
+        const value = this.state[key];
+
+        this.history[key].push(<KeyModification>{
+            is_delete: true,
+            value,
+            timestamp: new MockProtoTimestamp(),
+            tx_id: this.txID
+        });
+
         delete this.state[key];
 
         return Promise.resolve();
@@ -369,12 +393,13 @@ export class ChaincodeMockStub implements MockStub {
     }
 
     /**
-     * @todo Implement
+     * GetHistory for key
+     *
      * @param {string} key
      * @returns {Promise<"fabric-shim".Iterators.HistoryQueryIterator>}
      */
     getHistoryForKey(key: string): Promise<Iterators.HistoryQueryIterator> {
-        return undefined;
+        return Promise.resolve(new MockHistoryQueryIterator(this.history[key]));
     }
 
     /**
@@ -413,8 +438,8 @@ export class ChaincodeMockStub implements MockStub {
     /**
      * Get the stored payload for an event name in the local event map
      *
-     * @param {string} key
      * @returns {Promise<Buffer>}
+     * @param name
      */
     getEvent(name: string): Promise<Buffer> {
         return this.event[name];

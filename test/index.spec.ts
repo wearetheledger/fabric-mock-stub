@@ -149,6 +149,83 @@ describe('Test Mockstub', () => {
         })
     });
 
+    it('Should be able to get history', async () => {
+
+        const it = await stubWithInit.getHistoryForKey("CAR0")
+
+        const items = await Transform.iteratorToHistoryList(it);
+
+        console.log("it", items)
+
+        expect(items[0]).to.deep.include({
+            is_delete: false,
+            value:
+                {
+                    make: 'Toyota',
+                    model: 'Prius',
+                    color: 'blue',
+                    owner: 'Tomoko',
+                    docType: 'car'
+                },
+            tx_id: 'uudif'
+        })
+    });
+
+    it('Should be able to full history', async () => {
+        const stub = new ChaincodeMockStub('Full history', chaincode);
+        const key = "CAR0";
+
+        stub.mockTransactionStart("uudif")
+        await stub.putState(key, Transform.serialize({
+            make: 'Toyota',
+            model: 'Prius',
+            color: 'blue',
+            owner: 'Tomoko',
+            docType: 'car'
+        }));
+
+        const it = await stub.getHistoryForKey("CAR0")
+        const items = await Transform.iteratorToHistoryList(it);
+
+
+        stub.mockTransactionEnd("uudif")
+
+
+        expect(items[0]).to.deep.include({
+            is_delete: false,
+            value:
+                {
+                    make: 'Toyota',
+                    model: 'Prius',
+                    color: 'blue',
+                    owner: 'Tomoko',
+                    docType: 'car'
+                },
+            tx_id: 'uudif'
+        });
+
+        stub.mockTransactionStart("uudif2")
+
+        await stub.putState(key, Transform.serialize({
+            make: 'Toyota',
+            model: 'Prius',
+            color: 'blue',
+            owner: 'updated',
+            docType: 'car'
+        }));
+
+
+        stub.mockTransactionEnd("uudif2");
+
+        const it2 = await stub.getHistoryForKey("CAR0")
+        const items2 = await Transform.iteratorToHistoryList(it2);
+
+        expect(items2).to.be.length(2)
+
+        expect(items2[1].value.owner).to.eq("updated")
+
+    });
+
     it('Should be able to query using an rich query operator ', async () => {
 
         const query = {

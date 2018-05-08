@@ -98,14 +98,13 @@
 				</ul>
 				<h2 id="usage">Usage</h2>
 				<h3 id="chaincodemockstub-view-definition">ChaincodeMockStub <a href="https://wearetheledger.github.io/fabric-mock-stub/classes/_chaincodemockstub_.chaincodemockstub.html">View definition</a></h3>
-				<p>This ChaincodeMockStub is a Mock implementation of the fabric-shim stub. This means you can test your chaincode without actually starting your network. </p>
+				<p>This ChaincodeMockStub is a Mock implementation of the fabric-shim stub. This means you can test your chaincode without actually starting your network.</p>
 				<p>Examples are located at <a href="examples/tests">examples/tests</a></p>
 				<p><strong>!! Following methods are not (yet) implemented and will not work !!</strong></p>
 				<ul>
 					<li>getHistoryForKey</li>
 					<li>getBinding</li>
 					<li>getTransient</li>
-					<li>setEvent</li>
 					<li>getChannelID</li>
 				</ul>
 				<h3 id="how-to-test">How to test</h3>
@@ -234,7 +233,7 @@ describe(<span class="hljs-string">'Test MyChaincode'</span>, () =&gt; {
 				<h3 id="testing-individual-classes">Testing individual classes</h3>
 				<p>You are not required to only test using the <code>mockInvoke</code> and <code>mockInit</code>. You can directly call the methods on your chaincode or on the mockStub if you really want to.</p>
 				<h4 id="testing-using-mychaincode-directly">Testing using Mychaincode directly</h4>
-				<p>A remark when using this, depending what you return in your function, you will be able to recieve a Buffer or an object in your tests. This is discussed in <a href="#writing-chaincode">chaincode</a></p>
+				<p>A remark when using this, depending what you return in your function, you will be able to receive a Buffer or an object in your tests. This is discussed in <a href="#writing-chaincode">chaincode</a></p>
 				<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> { MyChaincode } <span class="hljs-keyword">from</span> <span class="hljs-string">'../&lt;path_to_your_chaincode_class&gt;'</span>;
 <span class="hljs-keyword">import</span> { ChaincodeMockStub, Transform } <span class="hljs-keyword">from</span> <span class="hljs-string">"@theledger/fabric-mock-stub"</span>;
 
@@ -261,7 +260,8 @@ describe(<span class="hljs-string">'Test MyChaincode'</span>, () =&gt; {
 });
 </code></pre>
 				<h4 id="testing-using-chaincodemockstub-directly-">Testing using ChaincodeMockStub directly 🤨</h4>
-				<p>You can do this, but you shouldn&#39;t. Your logic should be written in your functions, not your tests. </p>
+				<p>You can do this, but you shouldn&#39;t. Your logic should be written in your functions, not your tests.</p>
+				<h5 id="test-query-results">Test query results</h5>
 				<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> { MyChaincode } <span class="hljs-keyword">from</span> <span class="hljs-string">'../&lt;path_to_your_chaincode_class&gt;'</span>;
 <span class="hljs-keyword">import</span> { ChaincodeMockStub, Transform } <span class="hljs-keyword">from</span> <span class="hljs-string">"@theledger/fabric-mock-stub"</span>;
 
@@ -287,6 +287,17 @@ describe(<span class="hljs-string">'Test MyChaincode'</span>, () =&gt; {
 
         expect(items).to.be.length(<span class="hljs-number">2</span>)
     });
+});
+</code></pre>
+				<h5 id="test-emitted-events">Test emitted events</h5>
+				<pre><code class="lang-javascript">it(<span class="hljs-string">"Should get the emitted event"</span>, <span class="hljs-keyword">async</span> () =&gt; {
+        <span class="hljs-keyword">const</span> mockStub = <span class="hljs-keyword">new</span> ChaincodeMockStub(<span class="hljs-string">"MyMockStub"</span>, chaincode);
+
+        <span class="hljs-keyword">await</span> mockStub.mockInvoke(<span class="hljs-string">"tx1"</span>, [<span class="hljs-string">'createCar'</span>, <span class="hljs-string">`CAR0`</span>, <span class="hljs-string">`prop1`</span>, <span class="hljs-string">`prop2`</span>, <span class="hljs-string">`prop3`</span>, <span class="hljs-string">`owner`</span>]);
+
+        <span class="hljs-keyword">const</span> eventPayload = <span class="hljs-keyword">await</span> mockStub.getEvent(<span class="hljs-string">'CREATE_CAR'</span>);
+
+        expect(eventPayload).to.equal(<span class="hljs-string">'Car created.'</span>);
 });
 </code></pre>
 				<h2 id="contributing">Contributing</h2>
@@ -331,6 +342,12 @@ describe(<span class="hljs-string">'Test MyChaincode'</span>, () =&gt; {
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_idbytes_.html">"<wbr>IdBytes"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_mockhistoryqueryiterator_.html">"<wbr>Mock<wbr>History<wbr>Query<wbr>Iterator"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_mockprototimestamp_.html">"<wbr>Mock<wbr>Proto<wbr>Timestamp"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_mockstatequeryiterator_.html">"<wbr>Mock<wbr>State<wbr>Query<wbr>Iterator"</a>

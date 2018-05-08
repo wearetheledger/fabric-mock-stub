@@ -1,17 +1,17 @@
-import { Iterators, KV, NextResult } from 'fabric-shim';
+import { Iterators, KeyModification, NextKeyModificationResult } from 'fabric-shim';
 
 /**
  * @hidden
  */
-export class MockStateQueryIterator implements Iterators.StateQueryIterator {
+export class MockHistoryQueryIterator implements Iterators.HistoryQueryIterator {
 
     private currentLoc = 0;
     private closed = false;
 
-    constructor(private data: KV[]) {
+    constructor(private data: KeyModification[]) {
     }
 
-    next(): Promise<NextResult> {
+    next(): Promise<NextKeyModificationResult> {
 
         if (this.closed) {
             throw new Error('Iterator has already been closed');

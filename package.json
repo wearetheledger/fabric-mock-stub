@@ -1,6 +1,6 @@
 {
   "name": "@theledger/fabric-mock-stub",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Mock implementation of the hyperledger fabric-shim package for testing",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/wearetheledger/fabric-mock-stub#readme",
   "devDependencies": {
-    "@theledger/fabric-shim-types": "https://github.com/wearetheledger/fabric-shim-types",
+    "@theledger/fabric-shim-types": "^1.0.5",
     "@types/chai": "^4.0.4",
     "@types/mocha": "^2.2.43",
     "@types/node": "^9.4.6",
