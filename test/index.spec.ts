@@ -257,4 +257,22 @@ describe('Test Mockstub', () => {
         expect(eventPayload).to.equal('Car created.');
     });
 
+    it('Should be able to set the mspId', async () => {
+
+        const stub = new ChaincodeMockStub('mock', chaincode);
+        // Set the right mspId
+        stub.setCreator('anotherMSPId');
+
+        const response: ChaincodeReponse = await stub.mockInvoke('test', ['isRightMspId']);
+        expect(response.status).to.eq(200);
+        expect(response.payload).to.equal(true);
+
+        // Set a bad mspId
+        stub.setCreator('aBadMSPId');
+
+        const response: ChaincodeReponse = await stub.mockInvoke('test', ['isRightMspId']);
+        expect(response.status).to.eq(200);
+        expect(response.payload).to.not.equal(true);
+    });
+
 });

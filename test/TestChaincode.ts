@@ -151,7 +151,7 @@ export class TestChaincode {
 
         await stub.putState(args[0], Buffer.from(JSON.stringify(car)));
         await stub.setEvent('CREATE_CAR', 'Car created.');
-        
+
         console.info('============= END : Create Car ===========');
     }
 
@@ -200,5 +200,11 @@ export class TestChaincode {
 
         await stub.putState(args[0], Buffer.from(JSON.stringify(car)));
         console.info('============= END : changeCarOwner ===========');
+    }
+
+    async isRightMspId(stub, args) {
+        const transactionMspId = stub.getCreator().getMspid();
+
+        return transactionMspId === 'anotherMSPId';
     }
 };

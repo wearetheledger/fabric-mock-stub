@@ -51,6 +51,7 @@ export class ChaincodeMockStub implements MockStub {
     public history: Map<string, KeyModification[]> = new Map();
     private invokables: Map<string, MockStub>;
     private signedProposal: SignedProposal;
+    private mspId = 'dummymspId';
 
     /**
      * @param {string} name - Name of the mockstub
@@ -388,8 +389,18 @@ export class ChaincodeMockStub implements MockStub {
         return this.txTimestamp;
     }
 
+    /**
+     * Store a mspId of the transaction's creator
+     *
+     * @param {string} mspId
+     * @returns {void}
+     */
+    setCreator(mspId: string): void {
+        this.mspId = mspId;
+    }
+
     getCreator(): ProposalCreator {
-        return new ChaincodeProposalCreator('dummymspId', this.usercert);
+        return new ChaincodeProposalCreator(this.mspId, this.usercert);
     }
 
     /**
