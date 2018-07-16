@@ -1,7 +1,6 @@
 [![Build Status](https://travis-ci.org/wearetheledger/fabric-mock-stub.svg?branch=master)](https://travis-ci.org/wearetheledger/fabric-mock-stub)
 # Hyperledger Fabric Nodejs mockstub
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/wearetheledger/fabric-mock-stub.svg)](https://greenkeeper.io/)
 A Nodejs module that helps you to test your Hyperledger Fabric Nodejs chaincode. When it proves itself, we will be adding this package to the official Gerrit of the Fabric Nodejs SDK.
 
 - [Docs](https://wearetheledger.github.io/fabric-mock-stub)
@@ -9,7 +8,7 @@ A Nodejs module that helps you to test your Hyperledger Fabric Nodejs chaincode.
 - [Article about this repo](https://medium.com/wearetheledger/how-to-start-testing-your-hyperledger-fabric-nodejs-chaincode-229453c3c214)
 
 ## Table of contents
-- [Version matching](#Version matching)
+- [Version matching](#version-matching)
 - [Installation](#installation)
 - [Todo](#todo)
 - [Usage](#usage)
@@ -18,7 +17,7 @@ A Nodejs module that helps you to test your Hyperledger Fabric Nodejs chaincode.
 - [License](#license)
 
 ## Version matching
-| Fabric node SDK        | Shim types    |
+| Fabric node SDK        | Mock stub    |
 | ------------- |:-------------:|
 | v1.2.X     | v2.X.X |
 | V1.1.X     | v1.3.X     |
@@ -286,8 +285,8 @@ it("Should get the emitted event", async () => {
 
 ## Credits
 
-- Developer - Jo ([@jestersimpps](https://github.com/@jestersimpps))
-- Developer - Jonas ([@Superjo149](https://github.com/@Superjo149))
+- Developer - Jo ([@jestersimpps](https://github.com/jestersimpps))
+- Developer - Jonas ([@Superjo149](https://github.com/Superjo149))
 - Company - TheLedger ([theledger.be](https://theledger.be))
 
 ## License
