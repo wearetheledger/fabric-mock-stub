@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "npm run clean && tsc",
-    "test": "npm run lint && mocha -r ts-node/register test/**/*.spec.ts --reporter spec",
+    "test": "npm run lint && mocha -r ts-node/register test/**/*.spec.ts --reporter spec --trace-warnings",
     "lint": "tslint --fix -c tslint.json './src/**/*.ts'",
     "clean": "rimraf dist",
     "prepare": "npm run build",
@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/wearetheledger/fabric-mock-stub#readme",
   "devDependencies": {
-    "@theledger/fabric-shim-types": "^1.0.5",
+    "@theledger/fabric-shim-types": "^2.0.7",
     "@types/chai": "^4.0.4",
     "@types/mocha": "^2.2.43",
     "@types/node": "^9.4.6",
@@ -54,7 +54,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "npm run test"
+      "pre-push": "npm run test && git add ."
     }
   }
 }

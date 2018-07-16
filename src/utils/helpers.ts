@@ -1,5 +1,4 @@
 import { Logger, LoggerInstance, transports } from 'winston';
-import { isArray } from 'util';
 
 /**
  * helper functions
@@ -20,7 +19,6 @@ export class Helpers {
             transports: [new transports.Console({
                 level: level || 'debug',
                 prettyPrint: true,
-                handleExceptions: true,
                 json: false,
                 label: name,
                 colorize: true,
@@ -39,7 +37,7 @@ export class Helpers {
      * @memberof Helpers
      */
     public static checkArgs(args: string[], amount: number | number[]) {
-        if (isArray(amount)) {
+        if (Array.isArray(amount)) {
             if (!amount.filter(a => {
                     return args.length === a;
                 }).length) {
@@ -50,5 +48,15 @@ export class Helpers {
                 throw new Error(`Incorrect number of arguments. Expecting ${amount}`);
             }
         }
+    }
+
+    public static strcmp(a: string, b: string) {
+        if (a.toString() < b.toString()) {
+            return -1;
+        }
+        if (a.toString() > b.toString()) {
+            return 1;
+        }
+        return 0;
     }
 }

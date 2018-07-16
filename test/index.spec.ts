@@ -2,10 +2,11 @@
 
 import { ChaincodeMockStub } from '../src/ChaincodeMockStub';
 import { TestChaincode } from './TestChaincode';
-import { ChaincodeReponse } from 'fabric-shim';
+import { ChaincodeResponse } from 'fabric-shim';
 import { Transform } from '../src/utils/datatransform';
 
 import { expect } from 'chai';
+import { PingChaincode } from "./PingChaincode";
 
 const chaincode = new TestChaincode();
 
@@ -16,7 +17,7 @@ describe('Test Mockstub', () => {
 
         const args = ['arg1', 'arg2'];
 
-        const response: ChaincodeReponse = await stub.mockInit('uudif', args);
+        const response: ChaincodeResponse = await stub.mockInit('uudif', args);
 
         expect(Transform.bufferToObject(response.payload)['args']).to.deep.equal(args);
     });
@@ -39,20 +40,20 @@ describe('Test Mockstub', () => {
             'model': 'Prius',
             'color': 'blue',
             'owner': 'Tomoko',
-            'docType': 'car'
+            'docType': 'car',
+            "price": 22000
         };
 
-        const response: ChaincodeReponse = await stubWithInit.mockInvoke('test', ['queryCar', 'CAR0']);
+        const response: ChaincodeResponse = await stubWithInit.mockInvoke('test', ['queryCar', 'CAR0']);
 
         expect(response.status).to.eq(200);
-
 
         expect(Transform.bufferToObject(response.payload)).to.deep.equal(car0);
     });
 
     it('Should be able to query using getStateByRange', async () => {
 
-        const response: ChaincodeReponse = await stubWithInit.mockInvoke('test', ['queryAllCars']);
+        const response: ChaincodeResponse = await stubWithInit.mockInvoke('test', ['queryAllCars']);
 
         expect(response.status).to.eq(200);
 
@@ -121,7 +122,7 @@ describe('Test Mockstub', () => {
 
         const stub = new ChaincodeMockStub('mock', chaincode);
 
-        const response: ChaincodeReponse = await stub.mockInvoke('test', ['createCar', 'CAR0', 'prop1', 'prop2', 'prop3', 'test']);
+        const response: ChaincodeResponse = await stub.mockInvoke('test', ['createCar', 'CAR0', 'prop1', 'prop2', 'prop3', 'test']);
 
         expect(response.status).to.eq(200);
 
@@ -188,7 +189,7 @@ describe('Test Mockstub', () => {
         const items = await Transform.iteratorToHistoryList(it);
 
 
-        stub.mockTransactionEnd("uudif")
+        stub.mockTransactionEnd("uudif");
 
 
         expect(items[0]).to.deep.include({
@@ -213,7 +214,6 @@ describe('Test Mockstub', () => {
             owner: 'updated',
             docType: 'car'
         }));
-
 
         stub.mockTransactionEnd("uudif2");
 
@@ -247,7 +247,7 @@ describe('Test Mockstub', () => {
 
         const stub = new ChaincodeMockStub('mock', chaincode);
 
-        const response: ChaincodeReponse = await stub.mockInvoke('test', ['createCar', 'CAR0', 'prop1', 'prop2', 'prop3', 'test']);
+        const response: ChaincodeResponse = await stub.mockInvoke('test', ['createCar', 'CAR0', 'prop1', 'prop2', 'prop3', 'test']);
 
         expect(response.status).to.eq(200);
         expect(Object.keys(stub.event).length).to.equal(1);
@@ -263,16 +263,83 @@ describe('Test Mockstub', () => {
         // Set the right mspId
         stub.setCreator('anotherMSPId');
 
-        const response: ChaincodeReponse = await stub.mockInvoke('test', ['isRightMspId']);
-        expect(response.status).to.eq(200);
-        expect(response.payload).to.equal(true);
+        const res1: ChaincodeResponse = await stub.mockInvoke('test', ['isRightMspId']);
+        expect(res1.status).to.eq(200);
+        expect(res1.payload).to.equal(true);
 
         // Set a bad mspId
         stub.setCreator('aBadMSPId');
 
-        const response: ChaincodeReponse = await stub.mockInvoke('test', ['isRightMspId']);
+        const res2: ChaincodeResponse = await stub.mockInvoke('test', ['isRightMspId']);
+        expect(res2.status).to.eq(200);
+        expect(res2.payload).to.not.equal(true);
+    });
+
+    it('Should be able to set private data', async () => {
+
+        const stub = new ChaincodeMockStub('mock', chaincode);
+
+        const response: ChaincodeResponse = await stub.mockInvoke('test', ['createCar', 'CAR0', 'prop1', 'prop2', 'prop3', 'test']);
+
         expect(response.status).to.eq(200);
-        expect(response.payload).to.not.equal(true);
+
+        expect(Object.keys(stub.state).length).to.equal(1);
+
+        expect(Object.keys(stub.privateCollections["carDetails"]).length).to.equal(1);
+
+        expect(Buffer.from(stub.privateCollections["carDetails"]["CAR0"]).toString('utf8')).to.equal(JSON.stringify({
+            price: 20000,
+        }));
+    });
+
+    it('Should be able to set private data', async () => {
+
+        const stub = new ChaincodeMockStub('mock', chaincode);
+
+        const response: ChaincodeResponse = await stub.mockInvoke('test', ['createCar', 'CAR0', 'prop1', 'prop2', 'prop3', 'test']);
+
+        expect(response.status).to.eq(200);
+
+        expect(Object.keys(stub.state).length).to.equal(1);
+
+        expect(Object.keys(stub.privateCollections["carDetails"]).length).to.equal(1);
+
+        expect(Buffer.from(stub.privateCollections["carDetails"]["CAR0"]).toString('utf8')).to.equal(JSON.stringify({
+            price: 20000,
+        }));
+    });
+
+    it('Should be able to query all cars private data', async () => {
+
+        const response: ChaincodeResponse = await stubWithInit.mockInvoke('test', ['queryAllCarPrivateDetails']);
+
+        expect(response.status).to.eq(200);
+
+        const prices = JSON.parse(Buffer.from(response.payload).toString("utf8"));
+
+        expect(prices.length).to.equal(10);
+        expect(prices[1].Record.price).to.equal(35000);
+    });
+
+    it('Should be able to receive and handle transient data', async () => {
+
+        const response: ChaincodeResponse = await stubWithInit.mockInvoke('test', ['checkTransientData'], new Map(Object.entries({"test": Buffer.from("transientValue")})));
+
+        expect(response.status).to.eq(200);
+        expect(response.payload).to.equal(true);
+    });
+
+    it('Should be able to invoke other chaincide', async () => {
+
+        const stub = new ChaincodeMockStub('mock', chaincode);
+        const pingmockchaincode = new ChaincodeMockStub('pingmockchaincode', new PingChaincode());
+
+        stub.mockPeerChaincode("pingcode/mychannel", pingmockchaincode);
+
+        const response: ChaincodeResponse = await stub.mockInvoke('test', ['crossChaincode']);
+
+        expect(response.status).to.eq(200);
+        expect(response.payload).to.equal("pong!");
     });
 
 });
