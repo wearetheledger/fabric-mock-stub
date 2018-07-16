@@ -1,6 +1,6 @@
 import {
     ChaincodeInterface,
-    ChaincodeReponse,
+    ChaincodeResponse,
     Iterators,
     KeyModification,
     KV,
@@ -39,6 +39,9 @@ const defaultUserCert = '-----BEGIN CERTIFICATE-----' +
 /**
  * Mock implementation of the fabric-shim stub
  */
+
+export type StateMap = Map<string, Buffer>;
+
 export class ChaincodeMockStub implements MockStub {
 
     private logger: LoggerInstance;
@@ -46,10 +49,12 @@ export class ChaincodeMockStub implements MockStub {
     private txTimestamp: Timestamp;
     private txID: string;
     private args: string[];
-    public state: Map<string, Buffer> = new Map();
+    public state: StateMap = new Map();
+    public transientMap: StateMap = new Map();
+    public privateCollections: Map<string, StateMap> = new Map();
     public event: Map<string, Buffer> = new Map();
     public history: Map<string, KeyModification[]> = new Map();
-    private invokables: Map<string, MockStub>;
+    private invokables: Map<string, MockStub> = new Map();
     private signedProposal: SignedProposal;
     private mspId = 'dummymspId';
 
@@ -112,11 +117,13 @@ export class ChaincodeMockStub implements MockStub {
      * MockStub doesn't support concurrent transactions at present.
      *
      * @param {string} txid
+     * @param transientMap
      */
-    mockTransactionStart(txid: string): void {
+    mockTransactionStart(txid: string, transientMap?: StateMap): void {
         this.txID = txid;
         this.setSignedProposal(<SignedProposal>{});
         this.setTxTimestamp(new Timestamp());
+        this.transientMap = transientMap;
     }
 
     /**
@@ -127,6 +134,7 @@ export class ChaincodeMockStub implements MockStub {
     mockTransactionEnd(uuid: string): void {
         this.signedProposal = null;
         this.txID = '';
+        this.transientMap = new Map();
     }
 
     /**
@@ -146,11 +154,12 @@ export class ChaincodeMockStub implements MockStub {
      *
      * @param {string} uuid
      * @param {string[]} args
-     * @returns {Promise<"fabric-shim".ChaincodeReponse>}
+     * @param transientMap
+     * @returns {Promise<"fabric-shim".ChaincodeResponse>}
      */
-    async mockInit(uuid: string, args: string[]): Promise<ChaincodeReponse> {
+    async mockInit(uuid: string, args: string[], transientMap?: StateMap): Promise<ChaincodeResponse> {
         this.args = args;
-        this.mockTransactionStart(uuid);
+        this.mockTransactionStart(uuid, transientMap);
         const res = await this.cc.Init(this);
         this.mockTransactionEnd(uuid);
         return res;
@@ -161,11 +170,12 @@ export class ChaincodeMockStub implements MockStub {
      *
      * @param {string} uuid
      * @param {string[]} args
-     * @returns {Promise<"fabric-shim".ChaincodeReponse>}
+     * @param transientMap
+     * @returns {Promise<"fabric-shim".ChaincodeResponse>}
      */
-    async mockInvoke(uuid: string, args: string[]): Promise<ChaincodeReponse> {
+    async mockInvoke(uuid: string, args: string[], transientMap?: StateMap): Promise<ChaincodeResponse> {
         this.args = args;
-        this.mockTransactionStart(uuid);
+        this.mockTransactionStart(uuid, transientMap);
         const res = await this.cc.Invoke(this);
         this.mockTransactionEnd(uuid);
         return res;
@@ -177,9 +187,9 @@ export class ChaincodeMockStub implements MockStub {
      * @param {string} chaincodeName
      * @param {Buffer[]} args
      * @param {string} channel
-     * @returns {Promise<"fabric-shim".ChaincodeReponse>}
+     * @returns {Promise<"fabric-shim".ChaincodeResponse>}
      */
-    async invokeChaincode(chaincodeName: string, args: Buffer[], channel: string): Promise<ChaincodeReponse> {
+    async invokeChaincode(chaincodeName: string, args: Buffer[], channel: string): Promise<ChaincodeResponse> {
         // Internally we use chaincode name as a composite name
         if (channel != '') {
             chaincodeName = chaincodeName + '/' + channel;
@@ -187,7 +197,11 @@ export class ChaincodeMockStub implements MockStub {
 
         const otherStub = this.invokables[chaincodeName];
 
-        return await otherStub.MockInvoke(this.txID, args);
+        if(!otherStub){
+            throw new Error(`Chaincode ${chaincodeName} could not be found. Please create this using mockPeerChaincode.`);
+        }
+
+        return await otherStub.mockInvoke(this.txID, args);
     }
 
     /**
@@ -196,9 +210,9 @@ export class ChaincodeMockStub implements MockStub {
      * @param {string} uuid
      * @param {string[]} args
      * @param {"fabric-shim".SignedProposal} sp
-     * @returns {Promise<"fabric-shim".ChaincodeReponse>}
+     * @returns {Promise<"fabric-shim".ChaincodeResponse>}
      */
-    async mockInvokeWithSignedProposal(uuid: string, args: string[], sp: SignedProposal): Promise<ChaincodeReponse> {
+    async mockInvokeWithSignedProposal(uuid: string, args: string[], sp: SignedProposal): Promise<ChaincodeResponse> {
         this.args = args;
         this.mockTransactionStart(uuid);
         this.signedProposal = sp;
@@ -226,7 +240,7 @@ export class ChaincodeMockStub implements MockStub {
      */
     putState(key: string, value: Buffer): Promise<any> {
         if (this.txID == '') {
-            return Promise.reject('Cannot putState without a transactions - call stub.mockTransactionStart()?');
+            return Promise.reject('Cannot putState without a transaction - call stub.mockTransactionStart()!');
         }
 
         this.state[key] = value;
@@ -422,12 +436,12 @@ export class ChaincodeMockStub implements MockStub {
     }
 
     /**
-     * @todo Implement
+     * Returns mocked transient values. These need to be set using the mockInvoke or mockTransactionStart
      *
      * @returns {Map<string, Buffer>}
      */
-    getTransient(): Map<string, Buffer> {
-        return undefined;
+    getTransient(): StateMap {
+        return this.transientMap;
     }
 
     /**
@@ -438,7 +452,7 @@ export class ChaincodeMockStub implements MockStub {
      */
     setEvent(name: string, payload: Buffer): Promise<any> {
         if (this.txID == '') {
-            return Promise.reject('Cannot setEvent without a transactions - call stub.mockTransactionStart()?');
+            return Promise.reject('Cannot setEvent without a transactions - call stub.mockTransactionStart()!');
         }
 
         this.event[name] = payload;
@@ -463,6 +477,141 @@ export class ChaincodeMockStub implements MockStub {
      */
     getChannelID(): string {
         return undefined;
+    }
+
+    /**
+     * Get a stored value for this key in the local state
+     *
+     * @param collection
+     * @param {string} key
+     * @returns {Promise<Buffer>}
+     */
+    getPrivateData(collection: string, key: string): Promise<Buffer> {
+        return (this.privateCollections[collection] || {})[key];
+    }
+
+    /**
+     * Store a value for this key in the local state
+     *
+     * @param collection
+     * @param {string} key
+     * @param value
+     * @returns {Promise<Buffer>}
+     */
+    putPrivateData(collection: string, key: string, value: Buffer): Promise<any> {
+        if (this.txID == '') {
+            return Promise.reject('Cannot putState without a transaction - call stub.mockTransactionStart()!');
+        }
+
+        if (!this.privateCollections[collection]) {
+            this.privateCollections[collection] = new Map();
+        }
+
+        this.privateCollections[collection][key] = value;
+
+        return Promise.resolve();
+    }
+
+    /**
+     * DelState removes the specified `key` and its value from the ledger.
+     *
+     * @param collection
+     * @param {string} key
+     * @returns {Promise<any>}
+     */
+    deletePrivateData(collection: string, key: string): Promise<any> {
+        const value = (this.privateCollections[collection] || {})[key];
+
+        if (value) {
+            (this.privateCollections[collection] as StateMap).delete(key);
+        }
+
+        return Promise.resolve();
+    }
+
+    /**
+     * Get state by range of keys, empty keys will return everything
+     *
+     * @param collection
+     * @param {string} startKey
+     * @param {string} endKey
+     * @returns {Promise<"fabric-shim".Iterators.StateQueryIterator>}
+     */
+    getPrivateDataByRange(collection: string, startKey: string, endKey: string): Promise<Iterators.StateQueryIterator> {
+
+        const privateCollection = this.privateCollections[collection] || {};
+
+        const items: KV[] = Object.keys(privateCollection)
+            .filter((k: string) => {
+                const comp1 = Helpers.strcmp(k, startKey);
+                const comp2 = Helpers.strcmp(k, endKey);
+
+                return (comp1 >= 0 && comp2 <= 0) || (startKey == '' && endKey == '');
+            })
+            .map((k: string): KV => ({
+                key: k,
+                value: privateCollection[k]
+            }));
+
+        return Promise.resolve(new MockStateQueryIterator(items));
+
+    }
+
+    /**
+     *
+     * GetQueryResult function can be invoked by a chaincode to perform a
+     * rich query against state database.  Only supported by state database implementations
+     * that support rich query.  The query string is in the syntax of the underlying
+     * state database. An iterator is returned which can be used to iterate (next) over
+     * the query result set.
+     *
+     * Blog post on writing rich queries -
+     * https://medium.com/wearetheledger/hyperledger-fabric-couchdb-fantastic-queries-and-where-to-find-them-f8a3aecef767
+     *
+     * @param collection
+     * @param {string} query
+     * @returns {Promise<"fabric-shim".Iterators.StateQueryIterator>}
+     */
+    getPrivateDataQueryResult(collection: string, query: string): Promise<Iterators.StateQueryIterator> {
+
+        const privateCollection = this.privateCollections[collection] || {};
+
+        const keyValues: any = {};
+
+        Object.keys(privateCollection)
+            .forEach(k => {
+                keyValues[k] = Transform.bufferToObject(privateCollection[k]);
+            });
+
+        let parsedQuery: any;
+
+        try {
+            parsedQuery = JSON.parse(query);
+        } catch (err) {
+            throw new ChaincodeError('Error parsing query, should be string');
+        }
+
+        if (parsedQuery.sort) {
+            this.logger.warn('Sorting might work using the mockstub, but on a live network you need to add an index' +
+                ' to CouchDB. More info can be found here: http://hyperledger-fabric.readthedocs.io/en/release-1.1/' +
+                'couchdb_as_state_database.html#using-couchdb-from-chaincode');
+        }
+
+        const items = queryEngine.parseQuery(keyValues, parsedQuery)
+            .map((item: KV) => {
+                return {
+                    key: item.key,
+                    value: Transform.serialize(item.value)
+                };
+            });
+
+        return Promise.resolve(new MockStateQueryIterator(items));
+    }
+
+    getPrivateDataByPartialCompositeKey(collection: string, objectType: string, attributes: string[]): Promise<Iterators.StateQueryIterator> {
+        const partialCompositeKey = CompositeKeys.createCompositeKey(objectType, attributes);
+
+        return this.getPrivateDataByRange(collection, partialCompositeKey, partialCompositeKey + CompositeKeys.MAX_UNICODE_RUNE_VALUE);
     }
 
 }

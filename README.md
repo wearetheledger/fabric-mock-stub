@@ -9,12 +9,20 @@ A Nodejs module that helps you to test your Hyperledger Fabric Nodejs chaincode.
 - [Article about this repo](https://medium.com/wearetheledger/how-to-start-testing-your-hyperledger-fabric-nodejs-chaincode-229453c3c214)
 
 ## Table of contents
+- [Version matching](#Version matching)
 - [Installation](#installation)
 - [Todo](#todo)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [Credits](#credits)
 - [License](#license)
+
+## Version matching
+| Fabric node SDK        | Shim types    |
+| ------------- |:-------------:|
+| v1.2.X     | v2.X.X |
+| V1.1.X     | v1.3.X     |
+
 
 ## Installation
 ```sh
@@ -26,7 +34,6 @@ yarn add @theledger/fabric-mock-stub --dev
 - [ ] Implement `fields` and `sort` into GetQueryResult
 - Implement remaining mock methods for
     - [ ] getBinding
-    - [ ] getTransient
     - [ ] getChannelID
 
 ## Usage
@@ -37,7 +44,6 @@ Examples are located at [examples/tests](examples/tests)
 
 **!! Following methods are not (yet) implemented and will not work !!**
 - getBinding
-- getTransient
 - getChannelID
 
 ### How to test

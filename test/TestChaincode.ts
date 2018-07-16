@@ -1,3 +1,5 @@
+/* tslint:disable */
+
 /*
 # Copyright IBM Corp. All Rights Reserved.
 #
@@ -19,7 +21,7 @@ export class TestChaincode {
         console.info('=========== Instantiated fabcar chaincode ===========');
         const args = stub.getArgs();
 
-        if (args[0] == 'init') {
+        if (args[0] === 'init') {
             await this.initLedger(stub, args);
         }
 
@@ -50,7 +52,7 @@ export class TestChaincode {
     }
 
     async queryCar(stub, args) {
-        if (args.length != 1) {
+        if (args.length !== 1) {
             throw new Error('Incorrect number of arguments. Expecting CarNumber ex: CAR01');
         }
         let carNumber = args[0];
@@ -59,78 +61,99 @@ export class TestChaincode {
         if (!carAsBytes || carAsBytes.toString().length <= 0) {
             throw new Error(carNumber + ' does not exist: ');
         }
-        console.log(carAsBytes.toString());
-        return carAsBytes;
+
+        const privateData = await stub.getPrivateData("carDetails", carNumber);
+
+        let car = {
+            ...JSON.parse(Buffer.from(carAsBytes).toString('utf8')),
+            ...JSON.parse(Buffer.from(privateData).toString('utf8'))
+        };
+
+        return Buffer.from(JSON.stringify(car));
     }
 
     async initLedger(stub, args) {
         console.info('============= START : Initialize Ledger ===========');
-        let cars = [];
-        cars.push({
-            make: 'Toyota',
-            model: 'Prius',
-            color: 'blue',
-            owner: 'Tomoko'
-        });
-        cars.push({
-            make: 'Ford',
-            model: 'Mustang',
-            color: 'red',
-            owner: 'Brad'
-        });
-        cars.push({
-            make: 'Hyundai',
-            model: 'Tucson',
-            color: 'green',
-            owner: 'Jin Soo'
-        });
-        cars.push({
-            make: 'Volkswagen',
-            model: 'Passat',
-            color: 'yellow',
-            owner: 'Max'
-        });
-        cars.push({
-            make: 'Tesla',
-            model: 'S',
-            color: 'black',
-            owner: 'Adriana'
-        });
-        cars.push({
-            make: 'Peugeot',
-            model: '205',
-            color: 'purple',
-            owner: 'Michel'
-        });
-        cars.push({
-            make: 'Chery',
-            model: 'S22L',
-            color: 'white',
-            owner: 'Aarav'
-        });
-        cars.push({
-            make: 'Fiat',
-            model: 'Punto',
-            color: 'violet',
-            owner: 'Pari'
-        });
-        cars.push({
-            make: 'Tata',
-            model: 'Nano',
-            color: 'indigo',
-            owner: 'Valeria'
-        });
-        cars.push({
-            make: 'Holden',
-            model: 'Barina',
-            color: 'brown',
-            owner: 'Shotaro'
-        });
+        let cars = [
+            {
+                make: 'Toyota',
+                model: 'Prius',
+                color: 'blue',
+                owner: 'Tomoko',
+                price: 22000
+            },
+            {
+                make: 'Ford',
+                model: 'Mustang',
+                color: 'red',
+                owner: 'Brad',
+                price: 35000
+            },
+            {
+                make: 'Hyundai',
+                model: 'Tucson',
+                color: 'green',
+                owner: 'Jin Soo',
+                price: 30000
+            },
+            {
+                make: 'Volkswagen',
+                model: 'Passat',
+                color: 'yellow',
+                owner: 'Max',
+                price: 28000
+            },
+            {
+                make: 'Tesla',
+                model: 'S',
+                color: 'black',
+                owner: 'Adriana',
+                price: 54000
+            },
+            {
+                make: 'Peugeot',
+                model: '205',
+                color: 'purple',
+                owner: 'Michel',
+                price: 21000
+            },
+            {
+                make: 'Chery',
+                model: 'S22L',
+                color: 'white',
+                owner: 'Aarav',
+                price: 18000
+            },
+            {
+                make: 'Fiat',
+                model: 'Punto',
+                color: 'violet',
+                owner: 'Pari',
+                price: 20000
+            },
+            {
+                make: 'Tata',
+                model: 'Nano',
+                color: 'indigo',
+                owner: 'Valeria',
+                price: 24000
+            },
+            {
+                make: 'Holden',
+                model: 'Barina',
+                color: 'brown',
+                owner: 'Shotaro',
+                price: 26000
+            }
+        ];
 
         for (let i = 0; i < cars.length; i++) {
             cars[i].docType = 'car';
+            await stub.putPrivateData("carDetails", 'CAR' + i, Buffer.from(JSON.stringify({
+                price: cars[i].price
+            })));
+            delete cars[i].price;
             await stub.putState('CAR' + i, Buffer.from(JSON.stringify(cars[i])));
-            console.info('Added <--> ', cars[i]);
         }
         console.info('============= END : Initialize Ledger ===========');
     }
@@ -141,7 +164,7 @@ export class TestChaincode {
             throw new Error('Incorrect number of arguments. Expecting 5');
         }
 
-        var car = {
+        const car = {
             docType: 'car',
             make: args[1],
             model: args[2],
@@ -149,7 +172,12 @@ export class TestChaincode {
             owner: args[4]
         };
 
+        const privateDetails = {
+            price: 20000,
+        };
+
         await stub.putState(args[0], Buffer.from(JSON.stringify(car)));
+        await stub.putPrivateData("carDetails", args[0], Buffer.from(JSON.stringify(privateDetails)));
         await stub.setEvent('CREATE_CAR', 'Car created.');
 
         console.info('============= END : Create Car ===========');
@@ -168,7 +196,6 @@ export class TestChaincode {
 
             if (res.value && res.value.value.toString()) {
                 let jsonRes = {};
-                console.log(res.value.value.toString('utf8'));
 
                 jsonRes.Key = res.value.key;
                 try {
@@ -180,9 +207,37 @@ export class TestChaincode {
                 allResults.push(jsonRes);
             }
             if (res.done) {
-                console.log('end of data');
                 await iterator.close();
-                console.info(allResults);
+                return Buffer.from(JSON.stringify(allResults));
+            }
+        }
+    }
+
+    async queryAllCarPrivateDetails(stub, args) {
+
+        let startKey = 'CAR0';
+        let endKey = 'CAR999';
+
+        let iterator = await stub.getPrivateDataByRange("carDetails", startKey, endKey);
+
+        let allResults = [];
+        while (true) {
+            let res = await iterator.next();
+
+            if (res.value && res.value.value.toString()) {
+                let jsonRes = {};
+
+                jsonRes.Key = res.value.key;
+                try {
+                    jsonRes.Record = JSON.parse(res.value.value.toString('utf8'));
+                } catch (err) {
+                    console.log(err);
+                    jsonRes.Record = res.value.value.toString('utf8');
+                }
+                allResults.push(jsonRes);
+            }
+            if (res.done) {
+                await iterator.close();
                 return Buffer.from(JSON.stringify(allResults));
             }
         }
@@ -190,7 +245,7 @@ export class TestChaincode {
 
     async changeCarOwner(stub, args) {
         console.info('============= START : changeCarOwner ===========');
-        if (args.length != 2) {
+        if (args.length !== 2) {
             throw new Error('Incorrect number of arguments. Expecting 2');
         }
 
@@ -207,4 +262,17 @@ export class TestChaincode {
 
         return transactionMspId === 'anotherMSPId';
     }
-};
+
+    async checkTransientData(stub, args) {
+        const transientMap = stub.getTransient();
+
+        return Buffer.from(transientMap.get("test")).toString('utf8') === 'transientValue';
+    }
+
+    async crossChaincode(stub, args) {
+
+        const response = await stub.invokeChaincode("pingcode", ["ping"], "mychannel");
+
+        return response.payload;
+    }
+}
