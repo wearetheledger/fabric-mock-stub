@@ -25,7 +25,7 @@ export class Helpers {
             })],
             exitOnError: false,
         });
-    };
+    }
 
     /**
      * Check number of args
@@ -39,8 +39,8 @@ export class Helpers {
     public static checkArgs(args: string[], amount: number | number[]) {
         if (Array.isArray(amount)) {
             if (!amount.filter(a => {
-                    return args.length === a;
-                }).length) {
+                return args.length === a;
+            }).length) {
                 throw new Error(`Incorrect number of arguments. Expecting ${amount}`);
             }
         } else {
@@ -50,13 +50,14 @@ export class Helpers {
         }
     }
 
-    public static strcmp(a: string, b: string) {
-        if (a.toString() < b.toString()) {
-            return -1;
-        }
-        if (a.toString() > b.toString()) {
+    public static strcmp(a: string, b: string): number {
+        if (a > b) {
             return 1;
         }
+        if (a < b) {
+            return -1;
+        }
+        // a must be equal to b
         return 0;
     }
 }

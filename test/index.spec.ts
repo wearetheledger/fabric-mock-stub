@@ -60,6 +60,27 @@ describe('Test Mockstub', () => {
         expect(Transform.bufferToObject(response.payload)).to.be.length(10);
     });
 
+    it('Should be able to query using getStateByRange using keys', async () => {
+
+        const res = await stubWithInit.getStateByRange('CAR0','CAR3');
+
+        expect(res.data).to.be.length(4);
+    });
+
+    it('Should be able to query using getStateByRange using multiple digits', async () => {
+
+        const res = await stubWithInit.getStateByRange('CAR0','CAR2000');
+
+        expect(res.data).to.be.length(3);
+    });
+
+    it('Should be able to query using getStateByRange using multiple digits', async () => {
+
+        const res = await stubWithInit.getStateByRange('CAR','CAR2');
+
+        expect(res.data).to.be.length(3);
+    });
+
     it('Should be able to mock composite keys', async () => {
         const stub = new ChaincodeMockStub('GetStateByPartialCompositeKeyTest', chaincode);
 

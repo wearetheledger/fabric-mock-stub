@@ -74,6 +74,7 @@
 				</ul>
 				<h2 id="table-of-contents">Table of contents</h2>
 				<ul>
+					<li><a href="#version-matching">Version matching</a></li>
 					<li><a href="#installation">Installation</a></li>
 					<li><a href="#todo">Todo</a></li>
 					<li><a href="#usage">Usage</a></li>
@@ -81,6 +82,25 @@
 					<li><a href="#credits">Credits</a></li>
 					<li><a href="#license">License</a></li>
 				</ul>
+				<h2 id="version-matching">Version matching</h2>
+				<table>
+					<thead>
+						<tr>
+							<th>Fabric node SDK</th>
+							<th style="text-align:center">Mock stub</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>v1.2.X</td>
+							<td style="text-align:center">v2.X.X</td>
+						</tr>
+						<tr>
+							<td>V1.1.X</td>
+							<td style="text-align:center">v1.3.X</td>
+						</tr>
+					</tbody>
+				</table>
 				<h2 id="installation">Installation</h2>
 				<pre><code class="lang-sh">yarn add @theledger/fabric-mock-stub --dev
 </code></pre>
@@ -89,9 +109,7 @@
 					<li>[ ] Finish <a href="https://github.com/wearetheledger/node-couchdb-query-engine">node-couchdb-query-engine</a></li>
 					<li>[ ] Implement <code>fields</code> and <code>sort</code> into GetQueryResult</li>
 					<li>Implement remaining mock methods for<ul>
-							<li>[ ] getHistoryForKey</li>
 							<li>[ ] getBinding</li>
-							<li>[ ] getTransient</li>
 							<li>[ ] getChannelID</li>
 						</ul>
 					</li>
@@ -102,9 +120,7 @@
 				<p>Examples are located at <a href="examples/tests">examples/tests</a></p>
 				<p><strong>!! Following methods are not (yet) implemented and will not work !!</strong></p>
 				<ul>
-					<li>getHistoryForKey</li>
 					<li>getBinding</li>
-					<li>getTransient</li>
 					<li>getChannelID</li>
 				</ul>
 				<h3 id="how-to-test">How to test</h3>
@@ -310,8 +326,8 @@ describe(<span class="hljs-string">'Test MyChaincode'</span>, () =&gt; {
 				</ol>
 				<h2 id="credits">Credits</h2>
 				<ul>
-					<li>Developer - Jo (<a href="https://github.com/@jestersimpps">@jestersimpps</a>)</li>
-					<li>Developer - Jonas (<a href="https://github.com/@Superjo149">@Superjo149</a>)</li>
+					<li>Developer - Jo (<a href="https://github.com/jestersimpps">@jestersimpps</a>)</li>
+					<li>Developer - Jonas (<a href="https://github.com/Superjo149">@Superjo149</a>)</li>
 					<li>Company - TheLedger (<a href="https://theledger.be">theledger.be</a>)</li>
 				</ul>
 				<h2 id="license">License</h2>
@@ -350,7 +366,7 @@ describe(<span class="hljs-string">'Test MyChaincode'</span>, () =&gt; {
 						<a href="modules/_mockprototimestamp_.html">"<wbr>Mock<wbr>Proto<wbr>Timestamp"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_mockstatequeryiterator_.html">"<wbr>Mock<wbr>StateMap<wbr>Query<wbr>Iterator"</a>
+						<a href="modules/_mockstatequeryiterator_.html">"<wbr>Mock<wbr>State<wbr>Query<wbr>Iterator"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_constants_errors_.html">"constants/errors"</a>

@@ -197,7 +197,7 @@ export class ChaincodeMockStub implements MockStub {
 
         const otherStub = this.invokables[chaincodeName];
 
-        if(!otherStub){
+        if (!otherStub) {
             throw new Error(`Chaincode ${chaincodeName} could not be found. Please create this using mockPeerChaincode.`);
         }
 
@@ -289,20 +289,13 @@ export class ChaincodeMockStub implements MockStub {
      */
     getStateByRange(startKey: string, endKey: string): Promise<Iterators.StateQueryIterator> {
 
-        function strcmp(a: string, b: string) {
-            if (a.toString() < b.toString()) {
-                return -1;
-            }
-            if (a.toString() > b.toString()) {
-                return 1;
-            }
-            return 0;
-        }
-
         const items: KV[] = Object.keys(this.state)
             .filter((k: string) => {
-                const comp1 = strcmp(k, startKey);
-                const comp2 = strcmp(k, endKey);
+                const comp1 = Helpers.strcmp(k, startKey);
+                const comp2 = Helpers.strcmp(k, endKey);
+
+                console.log(k, startKey, comp1);
+                console.log(k, endKey, comp2);
 
                 return (comp1 >= 0 && comp2 <= 0) || (startKey == '' && endKey == '');
             })

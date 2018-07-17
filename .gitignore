@@ -12,3 +12,6 @@ yarn-error.getLoggerInstance*
 *.sln
 coverage
 dist
+.nyc_output
+coverage
+*.lcov

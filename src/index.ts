@@ -8,7 +8,7 @@ export {
     Transform,
     ChaincodeMockStub,
     Helpers
-}
+};
 
 export interface KeyModificationItem {
     is_delete: boolean;
