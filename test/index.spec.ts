@@ -62,21 +62,21 @@ describe('Test Mockstub', () => {
 
     it('Should be able to query using getStateByRange using keys', async () => {
 
-        const res = await stubWithInit.getStateByRange('CAR0','CAR3');
+        const res = await stubWithInit.getStateByRange('CAR0', 'CAR3');
 
         expect(res.data).to.be.length(4);
     });
 
     it('Should be able to query using getStateByRange using multiple digits', async () => {
 
-        const res = await stubWithInit.getStateByRange('CAR0','CAR2000');
+        const res = await stubWithInit.getStateByRange('CAR0', 'CAR2000');
 
         expect(res.data).to.be.length(3);
     });
 
     it('Should be able to query using getStateByRange using multiple digits', async () => {
 
-        const res = await stubWithInit.getStateByRange('CAR','CAR2');
+        const res = await stubWithInit.getStateByRange('CAR', 'CAR2');
 
         expect(res.data).to.be.length(3);
     });
@@ -350,7 +350,7 @@ describe('Test Mockstub', () => {
         expect(response.payload).to.equal(true);
     });
 
-    it('Should be able to invoke other chaincide', async () => {
+    it('Should be able to invoke other chaincode', async () => {
 
         const stub = new ChaincodeMockStub('mock', chaincode);
         const pingmockchaincode = new ChaincodeMockStub('pingmockchaincode', new PingChaincode());
@@ -361,6 +361,29 @@ describe('Test Mockstub', () => {
 
         expect(response.status).to.eq(200);
         expect(response.payload).to.equal("pong!");
+    });
+
+    it('Should not be able to invoke other chaincode when no chaincode mocked', async () => {
+
+        const stub = new ChaincodeMockStub('mock', chaincode);
+
+        const response: ChaincodeResponse = await stub.mockInvoke('test', ['crossChaincode']);
+
+        expect(response.status).to.eq(500);
+        expect(response.message.message).to.equal("Chaincode pingcode/mychannel could not be found. Please create this using mockPeerChaincode.");
+    });
+
+    it('Should not be able to put state when no txID given', async () => {
+
+        const stub = new ChaincodeMockStub('mock', chaincode);
+
+        expect(await stub.putState.bind(null, 'test', Buffer.from("fefe"))).to.throw(Error)
+    });
+    it('Should not be able to put state when no txID given', async () => {
+
+        const stub = new ChaincodeMockStub('mock', chaincode);
+
+        expect(await stub.putState.bind(null, 'test', Buffer.from("fefe"),{privateCollection:"testCollection"})).to.throw(Error)
     });
 
 });

@@ -47,7 +47,7 @@ export class ChaincodeMockStub implements MockStub {
     private logger: LoggerInstance;
 
     private txTimestamp: Timestamp;
-    private txID: string;
+    private txID: string = '';
     private args: string[];
     public state: StateMap = new Map();
     public transientMap: StateMap = new Map();
@@ -240,7 +240,7 @@ export class ChaincodeMockStub implements MockStub {
      */
     putState(key: string, value: Buffer): Promise<any> {
         if (this.txID == '') {
-            return Promise.reject('Cannot putState without a transaction - call stub.mockTransactionStart()!');
+            return Promise.reject(new Error('Cannot putState without a transaction - call stub.mockTransactionStart()!'));
         }
 
         this.state[key] = value;
@@ -445,7 +445,7 @@ export class ChaincodeMockStub implements MockStub {
      */
     setEvent(name: string, payload: Buffer): Promise<any> {
         if (this.txID == '') {
-            return Promise.reject('Cannot setEvent without a transactions - call stub.mockTransactionStart()!');
+            return Promise.reject(new Error('Cannot putState without a transaction - call stub.mockTransactionStart()!'));
         }
 
         this.event[name] = payload;
