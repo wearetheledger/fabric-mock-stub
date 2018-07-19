@@ -294,9 +294,6 @@ export class ChaincodeMockStub implements MockStub {
                 const comp1 = Helpers.strcmp(k, startKey);
                 const comp2 = Helpers.strcmp(k, endKey);
 
-                console.log(k, startKey, comp1);
-                console.log(k, endKey, comp2);
-
                 return (comp1 >= 0 && comp2 <= 0) || (startKey == '' && endKey == '');
             })
             .map((k: string): KV => {
