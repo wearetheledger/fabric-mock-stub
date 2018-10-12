@@ -22,7 +22,7 @@ export class PingChaincode {
         const args = stub.getArgs();
 
         if (args[0] === 'init') {
-            await this.initLedger(stub, args);
+            //await this.initLedger(stub, args);
         }
 
         return shim.success(Buffer.from(JSON.stringify({

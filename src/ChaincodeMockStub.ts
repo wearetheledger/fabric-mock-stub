@@ -2,12 +2,10 @@ import {
     ChaincodeInterface,
     ChaincodeResponse,
     Iterators,
-    KeyModification,
-    KV,
-    MockStub,
-    ProposalCreator,
-    SignedProposal,
-    SplitCompositekey
+    SplitCompositekey,
+    ChaincodeProposal,
+    ChaincodeStub,
+    StateQueryResponse
 } from 'fabric-shim';
 
 import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
@@ -21,6 +19,9 @@ import { ChaincodeError } from './ChaincodeError';
 import { Transform } from './utils/datatransform';
 import { MockProtoTimestamp } from './MockProtoTimestamp';
 import { MockHistoryQueryIterator } from './MockHistoryQueryIterator';
+import { MockStub, KV } from '.';
+import { MockKeyModification } from './models/mockKeyModification';
+import { MockKeyValue } from './models/mockKeyValue';
 
 const defaultUserCert = '-----BEGIN CERTIFICATE-----' +
     'MIIB6TCCAY+gAwIBAgIUHkmY6fRP0ANTvzaBwKCkMZZPUnUwCgYIKoZIzj0EAwIw' +
@@ -42,20 +43,19 @@ const defaultUserCert = '-----BEGIN CERTIFICATE-----' +
 
 export type StateMap = Map<string, Buffer>;
 
-export class ChaincodeMockStub implements MockStub {
-
+export class ChaincodeMockStub implements MockStub, ChaincodeStub {
     private logger: LoggerInstance;
 
     private txTimestamp: Timestamp;
-    private txID: string = '';
+    private txID = '';
     private args: string[];
     public state: StateMap = new Map();
     public transientMap: StateMap = new Map();
     public privateCollections: Map<string, StateMap> = new Map();
     public event: Map<string, Buffer> = new Map();
-    public history: Map<string, KeyModification[]> = new Map();
+    public history: Map<string, Iterators.KeyModification[]> = new Map();
     private invokables: Map<string, MockStub> = new Map();
-    private signedProposal: SignedProposal;
+    private signedProposal: ChaincodeProposal.SignedProposal;
     private mspId = 'dummymspId';
 
     /**
@@ -81,6 +81,20 @@ export class ChaincodeMockStub implements MockStub {
      */
     getArgs(): string[] {
         return this.args;
+    }
+
+    getSignedProposal() {
+        return this.signedProposal;
+    }
+
+    mockInvokeWithSignedProposal(uuid: string, args: string[], sp: ChaincodeProposal.SignedProposal): Promise<ChaincodeResponse> {
+        this.setSignedProposal(sp);
+
+        return this.mockInvoke(uuid, args);
+    }
+
+    setSignedProposal(sp: ChaincodeProposal.SignedProposal): void {
+        this.signedProposal = sp;
     }
 
     /**
@@ -121,7 +135,7 @@ export class ChaincodeMockStub implements MockStub {
      */
     mockTransactionStart(txid: string, transientMap?: StateMap): void {
         this.txID = txid;
-        this.setSignedProposal(<SignedProposal>{});
+        this.setChaincodeProposal(<ChaincodeProposal.SignedProposal>{});
         this.setTxTimestamp(new Timestamp());
         this.transientMap = transientMap;
     }
@@ -189,7 +203,7 @@ export class ChaincodeMockStub implements MockStub {
      * @param {string} channel
      * @returns {Promise<"fabric-shim".ChaincodeResponse>}
      */
-    async invokeChaincode(chaincodeName: string, args: Buffer[], channel: string): Promise<ChaincodeResponse> {
+    async invokeChaincode(chaincodeName: string, args: string[], channel: string): Promise<ChaincodeResponse> {
         // Internally we use chaincode name as a composite name
         if (channel != '') {
             chaincodeName = chaincodeName + '/' + channel;
@@ -209,10 +223,10 @@ export class ChaincodeMockStub implements MockStub {
      *
      * @param {string} uuid
      * @param {string[]} args
-     * @param {"fabric-shim".SignedProposal} sp
+     * @param {"fabric-shim".ChaincodeProposal.SignedProposal} sp
      * @returns {Promise<"fabric-shim".ChaincodeResponse>}
      */
-    async mockInvokeWithSignedProposal(uuid: string, args: string[], sp: SignedProposal): Promise<ChaincodeResponse> {
+    async mockInvokeWithChaincodeProposal(uuid: string, args: string[], sp: ChaincodeProposal.SignedProposal): Promise<ChaincodeResponse> {
         this.args = args;
         this.mockTransactionStart(uuid);
         this.signedProposal = sp;
@@ -249,12 +263,7 @@ export class ChaincodeMockStub implements MockStub {
             this.history[key] = [];
         }
 
-        this.history[key].push(<KeyModification>{
-            is_delete: false,
-            value,
-            timestamp: new MockProtoTimestamp(),
-            tx_id: this.txID
-        });
+        this.history[key].push(new MockKeyModification(false, value, this.txID));
 
         return Promise.resolve();
     }
@@ -268,12 +277,7 @@ export class ChaincodeMockStub implements MockStub {
     deleteState(key: string): Promise<any> {
         const value = this.state[key];
 
-        this.history[key].push(<KeyModification>{
-            is_delete: true,
-            value,
-            timestamp: new MockProtoTimestamp(),
-            tx_id: this.txID
-        });
+        this.history[key].push(new MockKeyModification(true, value, this.txID));
 
         delete this.state[key];
 
@@ -289,22 +293,31 @@ export class ChaincodeMockStub implements MockStub {
      */
     getStateByRange(startKey: string, endKey: string): Promise<Iterators.StateQueryIterator> {
 
-        const items: KV[] = Object.keys(this.state)
+        const items: Iterators.KV[] = Object.keys(this.state)
             .filter((k: string) => {
                 const comp1 = Helpers.strcmp(k, startKey);
                 const comp2 = Helpers.strcmp(k, endKey);
 
                 return (comp1 >= 0 && comp2 <= 0) || (startKey == '' && endKey == '');
             })
-            .map((k: string): KV => {
-                return {
-                    key: k,
-                    value: this.state[k]
-                };
-            });
+            .map((k: string) => new MockKeyValue(k, this.state[k]));
 
         return Promise.resolve(new MockStateQueryIterator(items));
 
+    }
+
+    // tslint:disable-next-line:max-line-length
+    getStateByRangeWithPagination(startKey: string, endKey: string, pageSize: number, bookmark?: string): Promise<StateQueryResponse<Iterators.StateQueryIterator>> {
+        throw new Error('Method not implemented.');
+    }
+    
+    // tslint:disable-next-line:max-line-length
+    getStateByPartialCompositeKeyWithPagination(objectType: string, attributes: string[], pageSize: number, bookmark?: string): Promise<StateQueryResponse<Iterators.StateQueryIterator>> {
+        throw new Error('Method not implemented.');
+    }
+
+    getQueryResultWithPagination(query: string, pageSize: number, bookmark?: string): Promise<StateQueryResponse<Iterators.StateQueryIterator>> {
+        throw new Error('Method not implemented.');
     }
 
     /**
@@ -343,12 +356,7 @@ export class ChaincodeMockStub implements MockStub {
         }
 
         const items = queryEngine.parseQuery(keyValues, parsedQuery)
-            .map((item: KV) => {
-                return {
-                    key: item.key,
-                    value: Transform.serialize(item.value)
-                };
-            });
+            .map((item: KV) => new MockKeyValue(item.key, Transform.serialize(item.value)));
 
         return Promise.resolve(new MockStateQueryIterator(items));
     }
@@ -374,11 +382,11 @@ export class ChaincodeMockStub implements MockStub {
         return CompositeKeys.splitCompositeKey(compositeKey);
     }
 
-    getSignedProposal(): SignedProposal {
+    getChaincodeProposal(): ChaincodeProposal.SignedProposal {
         return this.signedProposal;
     }
 
-    setSignedProposal(sp: SignedProposal): void {
+    setChaincodeProposal(sp: ChaincodeProposal.SignedProposal): void {
         this.signedProposal = sp;
     }
 
@@ -403,7 +411,7 @@ export class ChaincodeMockStub implements MockStub {
         this.mspId = mspId;
     }
 
-    getCreator(): ProposalCreator {
+    getCreator(): ChaincodeProposalCreator {
         return new ChaincodeProposalCreator(this.mspId, this.usercert);
     }
 
@@ -531,17 +539,14 @@ export class ChaincodeMockStub implements MockStub {
 
         const privateCollection = this.privateCollections[collection] || {};
 
-        const items: KV[] = Object.keys(privateCollection)
+        const items: Iterators.KV[] = Object.keys(privateCollection)
             .filter((k: string) => {
                 const comp1 = Helpers.strcmp(k, startKey);
                 const comp2 = Helpers.strcmp(k, endKey);
 
                 return (comp1 >= 0 && comp2 <= 0) || (startKey == '' && endKey == '');
             })
-            .map((k: string): KV => ({
-                key: k,
-                value: privateCollection[k]
-            }));
+            .map((k: string) => new MockKeyValue(k, privateCollection[k]));
 
         return Promise.resolve(new MockStateQueryIterator(items));
 
@@ -588,12 +593,7 @@ export class ChaincodeMockStub implements MockStub {
         }
 
         const items = queryEngine.parseQuery(keyValues, parsedQuery)
-            .map((item: KV) => {
-                return {
-                    key: item.key,
-                    value: Transform.serialize(item.value)
-                };
-            });
+            .map((item) => new MockKeyValue(item.key, Transform.serialize(item.value)));
 
         return Promise.resolve(new MockStateQueryIterator(items));
     }

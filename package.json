@@ -1,6 +1,6 @@
 {
   "name": "@theledger/fabric-mock-stub",
-  "version": "2.0.3",
+  "version": "3.0.0",
   "description": "Mock implementation of the hyperledger fabric-shim package for testing",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,7 +26,6 @@
   },
   "homepage": "https://github.com/wearetheledger/fabric-mock-stub#readme",
   "devDependencies": {
-    "@theledger/fabric-shim-types": "^2.0.7",
     "@types/chai": "^4.0.4",
     "@types/mocha": "^5.2.1",
     "@types/node": "^10.3.0",
@@ -47,7 +46,7 @@
   "dependencies": {
     "@theledger/couchdb-query-engine": "^2.4.4",
     "@types/lodash": "^4.14.104",
-    "fabric-shim": "^1.1.0-alpha",
+    "fabric-shim": "^1.3",
     "google-protobuf": "^3.5.0",
     "lodash": "^4.17.5",
     "winston": "^2.4.0"

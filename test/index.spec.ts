@@ -64,21 +64,21 @@ describe('Test Mockstub', () => {
 
         const res = await stubWithInit.getStateByRange('CAR0', 'CAR3');
 
-        expect(res.data).to.be.length(4);
+        expect((res as any).data).to.be.length(4);
     });
 
     it('Should be able to query using getStateByRange using multiple digits', async () => {
 
         const res = await stubWithInit.getStateByRange('CAR0', 'CAR2000');
 
-        expect(res.data).to.be.length(3);
+        expect((res as any).data).to.be.length(3);
     });
 
     it('Should be able to query using getStateByRange using multiple digits', async () => {
 
         const res = await stubWithInit.getStateByRange('CAR', 'CAR2');
 
-        expect(res.data).to.be.length(3);
+        expect((res as any).data).to.be.length(3);
     });
 
     it('Should be able to mock composite keys', async () => {
@@ -87,21 +87,21 @@ describe('Test Mockstub', () => {
         stub.mockTransactionStart("composite");
 
         // Add car 1
-        const car1 = {objectType: "CAR", make: "volvo", color: "red"};
+        const car1 = { objectType: "CAR", make: "volvo", color: "red" };
 
         const ck1 = stub.createCompositeKey(car1.objectType, [car1.make, car1.color]);
 
         await stub.putState(ck1, Transform.serialize(car1));
 
         // Add car 2
-        const car2 = {objectType: "CAR", make: "volvo", color: "blue"};
+        const car2 = { objectType: "CAR", make: "volvo", color: "blue" };
 
         const ck2 = stub.createCompositeKey(car2.objectType, [car2.make, car2.color]);
 
         await stub.putState(ck2, Transform.serialize(car2));
 
         // Add car 3
-        const car3 = {objectType: "CAR", make: "jaguar", color: "red"};
+        const car3 = { objectType: "CAR", make: "jaguar", color: "red" };
 
         const ck3 = stub.createCompositeKey(car1.objectType, [car3.make, car3.color]);
 
@@ -182,13 +182,13 @@ describe('Test Mockstub', () => {
         expect(items[0]).to.deep.include({
             is_delete: false,
             value:
-                {
-                    make: 'Toyota',
-                    model: 'Prius',
-                    color: 'blue',
-                    owner: 'Tomoko',
-                    docType: 'car'
-                },
+            {
+                make: 'Toyota',
+                model: 'Prius',
+                color: 'blue',
+                owner: 'Tomoko',
+                docType: 'car'
+            },
             tx_id: 'uudif'
         })
     });
@@ -216,13 +216,13 @@ describe('Test Mockstub', () => {
         expect(items[0]).to.deep.include({
             is_delete: false,
             value:
-                {
-                    make: 'Toyota',
-                    model: 'Prius',
-                    color: 'blue',
-                    owner: 'Tomoko',
-                    docType: 'car'
-                },
+            {
+                make: 'Toyota',
+                model: 'Prius',
+                color: 'blue',
+                owner: 'Tomoko',
+                docType: 'car'
+            },
             tx_id: 'uudif'
         });
 
@@ -243,7 +243,7 @@ describe('Test Mockstub', () => {
 
         expect(items2).to.be.length(2)
 
-        expect(items2[1].value.owner).to.eq("updated")
+        expect((items2[1].value as any).owner).to.eq("updated")
 
     });
 
@@ -344,7 +344,7 @@ describe('Test Mockstub', () => {
 
     it('Should be able to receive and handle transient data', async () => {
 
-        const response: ChaincodeResponse = await stubWithInit.mockInvoke('test', ['checkTransientData'], new Map(Object.entries({"test": Buffer.from("transientValue")})));
+        const response: ChaincodeResponse = await stubWithInit.mockInvoke('test', ['checkTransientData'], new Map(Object["entries"]({ "test": Buffer.from("transientValue") })));
 
         expect(response.status).to.eq(200);
         expect(response.payload).to.equal(true);
@@ -370,7 +370,7 @@ describe('Test Mockstub', () => {
         const response: ChaincodeResponse = await stub.mockInvoke('test', ['crossChaincode']);
 
         expect(response.status).to.eq(500);
-        expect(response.message.message).to.equal("Chaincode pingcode/mychannel could not be found. Please create this using mockPeerChaincode.");
+        expect((response.message as any).message).to.equal("Chaincode pingcode/mychannel could not be found. Please create this using mockPeerChaincode.");
     });
 
     it('Should not be able to put state when no txID given', async () => {
@@ -383,7 +383,7 @@ describe('Test Mockstub', () => {
 
         const stub = new ChaincodeMockStub('mock', chaincode);
 
-        expect(await stub.putState.bind(null, 'test', Buffer.from("fefe"),{privateCollection:"testCollection"})).to.throw(Error)
+        expect(await stub.putState.bind(null, 'test', Buffer.from("fefe"), { privateCollection: "testCollection" })).to.throw(Error)
     });
 
 });
