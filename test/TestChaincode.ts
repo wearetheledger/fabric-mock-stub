@@ -58,7 +58,9 @@ export class TestChaincode {
         let carNumber = args[0];
 
         let carAsBytes = await stub.getState(carNumber); //get the car from chaincode state
-
+        if (!carAsBytes || carAsBytes.toString().length <= 0) {
+            throw new Error(carNumber + ' does not exist: ');
+        }
         const privateData = await stub.getPrivateData("carDetails", carNumber);
 
         let car = {
