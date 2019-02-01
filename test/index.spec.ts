@@ -394,4 +394,41 @@ describe('Test Mockstub', () => {
         expect((res as any)).to.be.length(0);
     });
 
+
+
+    it('Should be able to query using getStateByRangeWithPagination', async () => {
+
+        const res = await stubWithInit.getStateByRangeWithPagination('', '', 2);
+
+        expect(res.metadata.fetched_records_count).to.eq(10);
+        expect(res.metadata.bookmark).to.eq("1");
+        expect((res.iterator as any).response.results.map(v => v.key)).to.deep.eq(["CAR0", "CAR1"]);
+
+        const res2 = await stubWithInit.getStateByRangeWithPagination('', '', 2, "1");
+
+
+        expect(res2.metadata.bookmark).to.eq("2");
+        expect((res2.iterator as any).response.results.map(v => v.key)).to.deep.eq(["CAR2", "CAR3"]);
+    });
+
+    it('Should be able to query using getQueryResultWithPagination', async () => {
+
+        const query = {
+            selector: {
+                make: { $in: ["Toyota", "Ford", "Hyundai", "Volkswagen", "Volkswagen"] }
+            }
+        };
+
+        const it = await stubWithInit.getQueryResultWithPagination(JSON.stringify(query), 2)
+
+        const items = await Transform.iteratorToList(it.iterator);
+
+        expect(items).to.be.length(2)
+
+
+        const it2 = await stubWithInit.getQueryResultWithPagination(JSON.stringify(query), 2, "1")
+
+        expect(await Transform.iteratorToList(it2.iterator)).to.be.length(2)
+    });
+
 });

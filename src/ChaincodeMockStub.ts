@@ -303,17 +303,17 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
     }
 
     // tslint:disable-next-line:max-line-length
-    getStateByRangeWithPagination(startKey: string, endKey: string, pageSize: number, bookmark?: string): Promise<StateQueryResponse<Iterators.StateQueryIterator>> {
-        throw new Error('Method not implemented.');
-    }
+    async getStateByRangeWithPagination(startKey: string, endKey: string, pageSize: number, bookmark?: string): Promise<StateQueryResponse<Iterators.StateQueryIterator>> {
 
-    // tslint:disable-next-line:max-line-length
-    getStateByPartialCompositeKeyWithPagination(objectType: string, attributes: string[], pageSize: number, bookmark?: string): Promise<StateQueryResponse<Iterators.StateQueryIterator>> {
-        throw new Error('Method not implemented.');
-    }
+        try {
+            const iterator = await this.getStateByRange(startKey, endKey);
 
-    getQueryResultWithPagination(query: string, pageSize: number, bookmark?: string): Promise<StateQueryResponse<Iterators.StateQueryIterator>> {
-        throw new Error('Method not implemented.');
+            return Promise.resolve(this.paginate(iterator, pageSize, bookmark));
+
+        } catch (err) {
+            throw err;
+        }
+
     }
 
     /**
@@ -357,6 +357,17 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
         return Promise.resolve(new MockStateQueryIterator(items, this.txID));
     }
 
+    // tslint:disable-next-line:max-line-length
+    async getQueryResultWithPagination(query: string, pageSize: number, bookmark?: string): Promise<StateQueryResponse<Iterators.StateQueryIterator>> {
+        try {
+            const iterator = await this.getQueryResult(query);
+
+            return this.paginate(iterator, pageSize, bookmark);
+        } catch (err) {
+            throw err;
+        }
+    }
+
     /**
      * Retrieve state by partial keys
      *
@@ -368,6 +379,17 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
         const partialCompositeKey = CompositeKeys.createCompositeKey(objectType, attributes);
 
         return this.getStateByRange(partialCompositeKey, partialCompositeKey + CompositeKeys.MAX_UNICODE_RUNE_VALUE);
+    }
+
+    // tslint:disable-next-line:max-line-length
+    async getStateByPartialCompositeKeyWithPagination(objectType: string, attributes: string[], pageSize: number, bookmark?: string): Promise<StateQueryResponse<Iterators.StateQueryIterator>> {
+        try {
+            const iterator = await this.getStateByPartialCompositeKey(objectType, attributes);
+
+            return this.paginate(iterator, pageSize, bookmark);
+        } catch (err) {
+            throw err;
+        }
     }
 
     createCompositeKey(objectType: string, attributes: string[]): string {
@@ -418,7 +440,7 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
      * @returns {Promise<"fabric-shim".Iterators.HistoryQueryIterator>}
      */
     getHistoryForKey(key: string): Promise<Iterators.HistoryQueryIterator> {
-        return Promise.resolve(new MockHistoryQueryIterator(this.history[key],this.txID));
+        return Promise.resolve(new MockHistoryQueryIterator(this.history[key], this.txID));
     }
 
     /**
@@ -598,6 +620,24 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
         const partialCompositeKey = CompositeKeys.createCompositeKey(objectType, attributes);
 
         return this.getPrivateDataByRange(collection, partialCompositeKey, partialCompositeKey + CompositeKeys.MAX_UNICODE_RUNE_VALUE);
+    }
+
+    private paginate(iterator: Iterators.CommonIterator, pageSize: number, bookmark?: string): StateQueryResponse<Iterators.CommonIterator> {
+
+        const items = (iterator as any).response.results;
+
+        const start = bookmark ? parseInt(bookmark) * pageSize : 0;
+
+        const pagedItems = items.slice(start, start + pageSize);
+
+        return {
+            iterator: new MockStateQueryIterator(pagedItems, this.txID),
+            metadata: {
+                fetched_records_count: items.length,
+                bookmark: `${(start / pageSize) + 1}`
+
+            }
+        };
     }
 
 }
