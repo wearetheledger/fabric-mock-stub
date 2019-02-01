@@ -22,6 +22,7 @@ import { MockHistoryQueryIterator } from './MockHistoryQueryIterator';
 import { MockStub, KV } from '.';
 import { MockKeyModification } from './models/mockKeyModification';
 import { MockKeyValue } from './models/mockKeyValue';
+import { promises } from 'fs';
 
 const defaultUserCert = '-----BEGIN CERTIFICATE-----' +
     'MIIB6TCCAY+gAwIBAgIUHkmY6fRP0ANTvzaBwKCkMZZPUnUwCgYIKoZIzj0EAwIw' +
@@ -242,7 +243,10 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
      * @returns {Promise<Buffer>}
      */
     getState(key: string): Promise<Buffer> {
-        return this.state[key];
+        if (!this.state[key]) {
+            return Promise.resolve(Buffer.from(''));
+        }
+        return Promise.resolve(this.state[key]);
     }
 
     /**
@@ -310,7 +314,7 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
     getStateByRangeWithPagination(startKey: string, endKey: string, pageSize: number, bookmark?: string): Promise<StateQueryResponse<Iterators.StateQueryIterator>> {
         throw new Error('Method not implemented.');
     }
-    
+
     // tslint:disable-next-line:max-line-length
     getStateByPartialCompositeKeyWithPagination(objectType: string, attributes: string[], pageSize: number, bookmark?: string): Promise<StateQueryResponse<Iterators.StateQueryIterator>> {
         throw new Error('Method not implemented.');

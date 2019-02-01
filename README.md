@@ -19,6 +19,7 @@ A Nodejs module that helps you to test your Hyperledger Fabric Nodejs chaincode.
 ## Version matching
 | Fabric node SDK        | Mock stub    |
 | ------------- |:-------------:|
+| v1.3.X     | v3.X.X |
 | v1.2.X     | v2.X.X |
 | V1.1.X     | v1.3.X     |
 

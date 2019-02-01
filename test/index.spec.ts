@@ -386,4 +386,12 @@ describe('Test Mockstub', () => {
         expect(await stub.putState.bind(null, 'test', Buffer.from("fefe"), { privateCollection: "testCollection" })).to.throw(Error)
     });
 
+
+    it('getState with invalid key should return empty buffer', async () => {
+
+        const res = await stubWithInit.getState('someInvalidKey');
+
+        expect((res as any)).to.be.length(0);
+    });
+
 });
