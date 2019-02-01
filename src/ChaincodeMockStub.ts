@@ -418,7 +418,7 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
      * @returns {Promise<"fabric-shim".Iterators.HistoryQueryIterator>}
      */
     getHistoryForKey(key: string): Promise<Iterators.HistoryQueryIterator> {
-        return Promise.resolve(new MockHistoryQueryIterator(this.history[key]));
+        return Promise.resolve(new MockHistoryQueryIterator(this.history[key],this.txID));
     }
 
     /**
