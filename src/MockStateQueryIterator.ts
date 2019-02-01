@@ -8,7 +8,16 @@ export class MockStateQueryIterator implements Iterators.StateQueryIterator {
     private currentLoc = 0;
     private closed = false;
 
-    constructor(private data: Iterators.KV[]) {
+    constructor(private data: Iterators.KV[], public txID: string) {
+    }
+
+    get response() {
+        return {
+            results: this.data,
+            has_more: this.data.length - (this.currentLoc + 1) >= 0,
+            metadata: Buffer.from(''),
+            id: 'mockId'
+        };
     }
 
     next(): Promise<Iterators.NextResult> {

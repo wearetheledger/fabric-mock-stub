@@ -4,10 +4,20 @@ import { Iterators } from 'fabric-shim';
  * @hidden
  */
 export class MockHistoryQueryIterator implements Iterators.HistoryQueryIterator {
+
     private currentLoc = 0;
     private closed = false;
 
-    constructor(private data: Iterators.KeyModification[]) {
+    constructor(private data: Iterators.KeyModification[], public txID: string) {
+    }
+
+    get response() {
+        return {
+            results: this.data,
+            has_more: this.data.length - (this.currentLoc + 1) >= 0,
+            metadata: Buffer.from(''),
+            id: 'mockId'
+        };
     }
 
     next(): Promise<Iterators.NextKeyModificationResult> {

@@ -1,28 +1,20 @@
+import * as queryEngine from '@theledger/couchdb-query-engine';
 import {
-    ChaincodeInterface,
-    ChaincodeResponse,
-    Iterators,
-    SplitCompositekey,
-    ChaincodeProposal,
-    ChaincodeStub,
+    ChaincodeInterface, ChaincodeProposal, ChaincodeResponse, ChaincodeStub, Iterators, SplitCompositekey,
     StateQueryResponse
 } from 'fabric-shim';
-
 import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
-import { MockStateQueryIterator } from './MockStateQueryIterator';
+import { LoggerInstance } from 'winston';
+import { KV, MockStub } from '.';
+import { ChaincodeError } from './ChaincodeError';
 import { ChaincodeProposalCreator } from './ChaincodeProposalCreator';
 import { CompositeKeys } from './CompositeKeys';
-import { Helpers } from './utils/helpers';
-import { LoggerInstance } from 'winston';
-import * as queryEngine from '@theledger/couchdb-query-engine';
-import { ChaincodeError } from './ChaincodeError';
-import { Transform } from './utils/datatransform';
-import { MockProtoTimestamp } from './MockProtoTimestamp';
 import { MockHistoryQueryIterator } from './MockHistoryQueryIterator';
-import { MockStub, KV } from '.';
+import { MockStateQueryIterator } from './MockStateQueryIterator';
 import { MockKeyModification } from './models/mockKeyModification';
 import { MockKeyValue } from './models/mockKeyValue';
-import { promises } from 'fs';
+import { Transform } from './utils/datatransform';
+import { Helpers } from './utils/helpers';
 
 const defaultUserCert = '-----BEGIN CERTIFICATE-----' +
     'MIIB6TCCAY+gAwIBAgIUHkmY6fRP0ANTvzaBwKCkMZZPUnUwCgYIKoZIzj0EAwIw' +
@@ -306,7 +298,7 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
             })
             .map((k: string) => new MockKeyValue(k, this.state[k]));
 
-        return Promise.resolve(new MockStateQueryIterator(items));
+        return Promise.resolve(new MockStateQueryIterator(items, this.txID));
 
     }
 
@@ -362,7 +354,7 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
         const items = queryEngine.parseQuery(keyValues, parsedQuery)
             .map((item: KV) => new MockKeyValue(item.key, Transform.serialize(item.value)));
 
-        return Promise.resolve(new MockStateQueryIterator(items));
+        return Promise.resolve(new MockStateQueryIterator(items, this.txID));
     }
 
     /**
@@ -552,7 +544,7 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
             })
             .map((k: string) => new MockKeyValue(k, privateCollection[k]));
 
-        return Promise.resolve(new MockStateQueryIterator(items));
+        return Promise.resolve(new MockStateQueryIterator(items, this.txID));
 
     }
 
@@ -599,7 +591,7 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
         const items = queryEngine.parseQuery(keyValues, parsedQuery)
             .map((item) => new MockKeyValue(item.key, Transform.serialize(item.value)));
 
-        return Promise.resolve(new MockStateQueryIterator(items));
+        return Promise.resolve(new MockStateQueryIterator(items, this.txID));
     }
 
     getPrivateDataByPartialCompositeKey(collection: string, objectType: string, attributes: string[]): Promise<Iterators.StateQueryIterator> {

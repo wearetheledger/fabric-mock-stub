@@ -64,21 +64,21 @@ describe('Test Mockstub', () => {
 
         const res = await stubWithInit.getStateByRange('CAR0', 'CAR3');
 
-        expect((res as any).data).to.be.length(4);
+        expect((res as any).response.results).to.be.length(4);
     });
 
     it('Should be able to query using getStateByRange using multiple digits', async () => {
 
         const res = await stubWithInit.getStateByRange('CAR0', 'CAR2000');
 
-        expect((res as any).data).to.be.length(3);
+        expect((res as any).response.results).to.be.length(3);
     });
 
     it('Should be able to query using getStateByRange using multiple digits', async () => {
 
         const res = await stubWithInit.getStateByRange('CAR', 'CAR2');
 
-        expect((res as any).data).to.be.length(3);
+        expect((res as any).response.results).to.be.length(3);
     });
 
     it('Should be able to mock composite keys', async () => {
