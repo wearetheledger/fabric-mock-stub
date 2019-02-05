@@ -50,6 +50,8 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
     private invokables: Map<string, MockStub> = new Map();
     private signedProposal: ChaincodeProposal.SignedProposal;
     private mspId = 'dummymspId';
+    public stateValidation: StateMap = new Map();
+    public privatedataValidation: Map<string, StateMap> = new Map();
 
     /**
      * @param {string} name - Name of the mockstub
@@ -614,6 +616,42 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
             .map((item) => new MockKeyValue(item.key, Transform.serialize(item.value)));
 
         return Promise.resolve(new MockStateQueryIterator(items, this.txID));
+    }
+
+    async setStateValidationParameter(key: string, ep: Buffer): Promise<void> {
+        this.stateValidation[key] = ep;
+
+        this.logger.warn('Due to the complexity of endorsement policies, in our mockstub, we do not enforce the actual polcies on the mocked state.');
+    }
+
+    getStateValidationParameter(key: string): Promise<Buffer> {
+        if (!this.stateValidation[key]) {
+            return Promise.resolve(Buffer.from(''));
+        }
+
+        return Promise.resolve(this.stateValidation[key]);
+    }
+
+    async setPrivateDataValidationParameter(collection: string, key: string, ep: Buffer): Promise<void> {
+
+        if (!this.privatedataValidation[collection]) {
+            this.privatedataValidation[collection] = new Map();
+        }
+
+        this.logger.warn('Due to the complexity of endorsement policies, in our mockstub, we do not enforce the actual polcies on the mocked state.');
+
+        this.privatedataValidation[collection][key] = ep;
+
+    }
+
+    async getPrivateDataValidationParameter(collection: string, key: string): Promise<Buffer> {
+        const policy = (this.privateCollections[collection] || {})[key];
+
+        if (!policy) {
+            return Promise.resolve(Buffer.from(''));
+        }
+
+        return Promise.resolve(policy);
     }
 
     getPrivateDataByPartialCompositeKey(collection: string, objectType: string, attributes: string[]): Promise<Iterators.StateQueryIterator> {

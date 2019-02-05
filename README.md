@@ -7,6 +7,9 @@ A Nodejs module that helps you to test your Hyperledger Fabric Nodejs chaincode.
 - [Example usage](https://github.com/wearetheledger/fabric-network-boilerplate/tree/master/chaincode/node)
 - [Article about this repo](https://medium.com/wearetheledger/how-to-start-testing-your-hyperledger-fabric-nodejs-chaincode-229453c3c214)
 
+## 🚨 Note
+Due to the complexity, key endorsement policies introduced in v1.4 are currently not being enforced.
+
 ## Table of contents
 - [Version matching](#version-matching)
 - [Installation](#installation)
@@ -19,6 +22,7 @@ A Nodejs module that helps you to test your Hyperledger Fabric Nodejs chaincode.
 ## Version matching
 | Fabric node SDK        | Mock stub    |
 | ------------- |:-------------:|
+| v1.4.X     | v4.X.X |
 | v1.3.X     | v3.X.X |
 | v1.2.X     | v2.X.X |
 | V1.1.X     | v1.3.X     |
