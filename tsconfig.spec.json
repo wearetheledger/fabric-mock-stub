@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "types": [
+            "@types/chai"
+        ],
+        "typeRoots": [
+            "./node_modules/@types"
+        ],
+    }
+}
