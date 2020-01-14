@@ -147,7 +147,7 @@ export class TestChaincode {
         ];
 
         for (let i = 0; i < cars.length; i++) {
-            cars[i].docType = 'car';
+            (cars[i] as any).docType = 'car';
             await stub.putPrivateData("carDetails", 'CAR' + i, Buffer.from(JSON.stringify({
                 price: cars[i].price
             })));
@@ -196,12 +196,12 @@ export class TestChaincode {
             if (res.value && res.value.value.toString()) {
                 let jsonRes = {};
 
-                jsonRes.Key = res.value.key;
+                (jsonRes as any).Key = res.value.key;
                 try {
-                    jsonRes.Record = JSON.parse(res.value.value.toString('utf8'));
+                    (jsonRes as any).Record = JSON.parse(res.value.value.toString('utf8'));
                 } catch (err) {
                     console.log(err);
-                    jsonRes.Record = res.value.value.toString('utf8');
+                    (jsonRes as any).Record = res.value.value.toString('utf8');
                 }
                 allResults.push(jsonRes);
             }
@@ -226,12 +226,12 @@ export class TestChaincode {
             if (res.value && res.value.value.toString()) {
                 let jsonRes = {};
 
-                jsonRes.Key = res.value.key;
+                (jsonRes as any).Key = res.value.key;
                 try {
-                    jsonRes.Record = JSON.parse(res.value.value.toString('utf8'));
+                    (jsonRes as any).Record = JSON.parse(res.value.value.toString('utf8'));
                 } catch (err) {
                     console.log(err);
-                    jsonRes.Record = res.value.value.toString('utf8');
+                    (jsonRes as any).Record = res.value.value.toString('utf8');
                 }
                 allResults.push(jsonRes);
             }
