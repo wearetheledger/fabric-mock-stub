@@ -37,6 +37,7 @@ const defaultUserCert = '-----BEGIN CERTIFICATE-----' +
 export type StateMap = Map<string, Buffer>;
 
 export class ChaincodeMockStub implements MockStub, ChaincodeStub {
+
     private logger: LoggerInstance;
 
     private txTimestamp: Timestamp;
@@ -60,6 +61,10 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
      */
     constructor(private name: string, private cc: ChaincodeInterface, private usercert: string = defaultUserCert) {
         this.logger = Helpers.getLoggerInstance(this.name);
+    }
+
+    getPrivateDataHash(collection: string, key: string): Promise<Buffer> {
+        throw new Error('Method not implemented.');
     }
 
     /**
