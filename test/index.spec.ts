@@ -431,4 +431,15 @@ describe('Test Mockstub', () => {
         expect(await Transform.iteratorToList(it2.iterator)).to.be.length(2)
     });
 
+    it('Should test the getPrivateDataHash which throws an error ', async () => {
+
+        try {
+            const it = await stubWithInit.getPrivateDataHash("string", "string")
+            // Should have thrown an error at this point
+            expect(true).to.be.false;
+        } catch (error) {
+            expect(true).to.be.true;
+        }
+    });
+
 });
