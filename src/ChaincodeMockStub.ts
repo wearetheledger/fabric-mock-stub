@@ -111,12 +111,12 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
      */
     getFunctionAndParameters(): { params: string[]; fcn: string } {
 
-        const params = this.getStringArgs();
+        let params = this.getStringArgs();
         let fcn = '';
 
         if (params.length >= 1) {
             fcn = params[0];
-            params.splice(0, 1);
+            params = params.slice(1);
         }
 
         return {
