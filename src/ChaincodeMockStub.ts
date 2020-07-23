@@ -546,7 +546,7 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
         const value = (this.privateCollections[collection] || {})[key];
 
         if (value) {
-            (this.privateCollections[collection] as StateMap).delete(key);
+            delete this.privateCollections[collection][key];
         }
 
         return Promise.resolve();
