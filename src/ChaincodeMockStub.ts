@@ -301,7 +301,7 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
                 const comp1 = Helpers.strcmp(k, startKey);
                 const comp2 = Helpers.strcmp(k, endKey);
 
-                return (comp1 >= 0 && comp2 <= 0) || (startKey == '' && endKey == '');
+                return (comp1 >= 0 && comp2 < 0) || (startKey == '' && endKey == '');
             })
             .map((k: string) => new MockKeyValue(k, this.state[k]));
 
@@ -569,7 +569,7 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
                 const comp1 = Helpers.strcmp(k, startKey);
                 const comp2 = Helpers.strcmp(k, endKey);
 
-                return (comp1 >= 0 && comp2 <= 0) || (startKey == '' && endKey == '');
+                return (comp1 >= 0 && comp2 < 0) || (startKey == '' && endKey == '');
             })
             .map((k: string) => new MockKeyValue(k, privateCollection[k]));
 
