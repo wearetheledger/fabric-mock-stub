@@ -62,7 +62,7 @@ describe('Test Mockstub', () => {
 
     it('Should be able to query using getStateByRange using keys', async () => {
 
-        const res = await stubWithInit.getStateByRange('CAR0', 'CAR3');
+        const res = await stubWithInit.getStateByRange('CAR0', 'CAR4');
 
         expect((res as any).response.results).to.be.length(4);
     });
@@ -76,7 +76,28 @@ describe('Test Mockstub', () => {
 
     it('Should be able to query using getStateByRange using multiple digits', async () => {
 
-        const res = await stubWithInit.getStateByRange('CAR', 'CAR2');
+        const res = await stubWithInit.getStateByRange('CAR', 'CAR3');
+
+        expect((res as any).response.results).to.be.length(3);
+    });
+
+    it('Should be able to query using getPrivateDataByRange using keys', async () => {
+
+        const res = await stubWithInit.getPrivateDataByRange('carDetails', 'CAR0', 'CAR4');
+
+        expect((res as any).response.results).to.be.length(4);
+    });
+
+    it('Should be able to query using getPrivateDataByRange using multiple digits', async () => {
+
+        const res = await stubWithInit.getPrivateDataByRange('carDetails', 'CAR0', 'CAR2000');
+
+        expect((res as any).response.results).to.be.length(3);
+    });
+
+    it('Should be able to query using getPrivateDataByRange using multiple digits', async () => {
+
+        const res = await stubWithInit.getPrivateDataByRange('carDetails', 'CAR', 'CAR3');
 
         expect((res as any).response.results).to.be.length(3);
     });
@@ -440,6 +461,36 @@ describe('Test Mockstub', () => {
         } catch (error) {
             expect(true).to.be.true;
         }
+    });
+
+
+    it('Should be able to delete state', async () => {
+
+        const stub = new ChaincodeMockStub('mock', chaincode);
+        const response: ChaincodeResponse = await stub.mockInvoke('test', ['createCar', 'CAR0', 'prop1', 'prop2', 'prop3', 'test']);
+        expect(response.status).to.eq(200);
+        expect(Object.keys(stub.state).length).to.equal(1);
+        expect(Object.keys(stub.privateCollections["carDetails"]).length).to.equal(1);
+
+        await stub.deleteState('CAR0');
+
+        expect(Object.keys(stub.state).length).to.equal(0);
+        expect(Object.keys(stub.privateCollections["carDetails"]).length).to.equal(1);
+
+    });
+
+    it('Should be able to delete private data', async () => {
+
+        const stub = new ChaincodeMockStub('mock', chaincode);
+        const response: ChaincodeResponse = await stub.mockInvoke('test', ['createCar', 'CAR0', 'prop1', 'prop2', 'prop3', 'test']);
+        expect(response.status).to.eq(200);
+        expect(Object.keys(stub.state).length).to.equal(1);
+        expect(Object.keys(stub.privateCollections["carDetails"]).length).to.equal(1);
+
+        let res = await stub.deletePrivateData("carDetails", 'CAR0');
+
+        expect(Object.keys(stub.state).length).to.equal(1);
+        expect(Object.keys(stub.privateCollections["carDetails"]).length).to.equal(0);
     });
 
 });

@@ -301,7 +301,7 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
                 const comp1 = Helpers.strcmp(k, startKey);
                 const comp2 = Helpers.strcmp(k, endKey);
 
-                return (comp1 >= 0 && comp2 <= 0) || (startKey == '' && endKey == '');
+                return (comp1 >= 0 && comp2 < 0) || (startKey == '' && endKey == '');
             })
             .map((k: string) => new MockKeyValue(k, this.state[k]));
 
@@ -546,7 +546,7 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
         const value = (this.privateCollections[collection] || {})[key];
 
         if (value) {
-            (this.privateCollections[collection] as StateMap).delete(key);
+            delete this.privateCollections[collection][key];
         }
 
         return Promise.resolve();
@@ -569,7 +569,7 @@ export class ChaincodeMockStub implements MockStub, ChaincodeStub {
                 const comp1 = Helpers.strcmp(k, startKey);
                 const comp2 = Helpers.strcmp(k, endKey);
 
-                return (comp1 >= 0 && comp2 <= 0) || (startKey == '' && endKey == '');
+                return (comp1 >= 0 && comp2 < 0) || (startKey == '' && endKey == '');
             })
             .map((k: string) => new MockKeyValue(k, privateCollection[k]));
 
