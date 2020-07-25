@@ -1,6 +1,6 @@
 {
   "name": "@theledger/fabric-mock-stub",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Mock implementation of the hyperledger fabric-shim package for testing",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
