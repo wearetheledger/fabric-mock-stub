@@ -62,7 +62,7 @@ describe('Test Mockstub', () => {
 
     it('Should be able to query using getStateByRange using keys', async () => {
 
-        const res = await stubWithInit.getStateByRange('CAR0', 'CAR3');
+        const res = await stubWithInit.getStateByRange('CAR0', 'CAR4');
 
         expect((res as any).response.results).to.be.length(4);
     });
@@ -76,7 +76,28 @@ describe('Test Mockstub', () => {
 
     it('Should be able to query using getStateByRange using multiple digits', async () => {
 
-        const res = await stubWithInit.getStateByRange('CAR', 'CAR2');
+        const res = await stubWithInit.getStateByRange('CAR', 'CAR3');
+
+        expect((res as any).response.results).to.be.length(3);
+    });
+
+    it('Should be able to query using getPrivateDataByRange using keys', async () => {
+
+        const res = await stubWithInit.getPrivateDataByRange('carDetails', 'CAR0', 'CAR4');
+
+        expect((res as any).response.results).to.be.length(4);
+    });
+
+    it('Should be able to query using getPrivateDataByRange using multiple digits', async () => {
+
+        const res = await stubWithInit.getPrivateDataByRange('carDetails', 'CAR0', 'CAR2000');
+
+        expect((res as any).response.results).to.be.length(3);
+    });
+
+    it('Should be able to query using getPrivateDataByRange using multiple digits', async () => {
+
+        const res = await stubWithInit.getPrivateDataByRange('carDetails', 'CAR', 'CAR3');
 
         expect((res as any).response.results).to.be.length(3);
     });
